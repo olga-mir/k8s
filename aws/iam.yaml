@@ -1,0 +1,20 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: iam definitions needed for kops
+Resources:
+  KopsGroup:
+    Type: AWS::IAM::Group
+    Properties:
+      GroupName: KopsGroup
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonEC2FullAccess
+        - arn:aws:iam::aws:policy/AmazonRoute53FullAccess
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+        - arn:aws:iam::aws:policy/IAMFullAccess
+        - arn:aws:iam::aws:policy/AmazonVPCFullAccess
+  KopsUser:
+    Type: AWS::IAM::User
+    DependsOn: KopsGroup
+    Properties:
+      Groups:
+        - KopsGroup
+      UserName: KopsUser
