@@ -3,6 +3,10 @@
 This repository contains scripts and manifests to create a kubernetes cluster on AWS using kOps.
 This cluster is intended to be short-lived and used for self learning. It is deployed to the default VPC into public subnets. SSH and API server access is allowed only from the same IP address that it was created from, therefore it is possible to get locked out if IP changes and will require restore via AWS UI. Some security features are intentionally omitted (like audit logging, appArmor, OPA, etc) to allow practcing and experimenting. Always delete when not in use.
 
+# Supported Versions
+
+This setup has been tested with kubernetes version 1.21.4 and kOps version 1.21.1
+
 # Prerequisites
 
 You needs access to AWS account with sufficient permissions to create a role for kOps, create cluster resources, upload to S3 bucket.
