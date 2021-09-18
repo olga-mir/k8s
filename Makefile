@@ -3,8 +3,8 @@ DATESTR=$(date +%F_%H_%M_%S)
 JSONNETFILES=$(wildcard clusterConfig/*.*sonnet)
 
 # Generates cluster.yaml from jsonnet files found in `clusterConfig`.
-# (this target will not re-fresh if IP of local machine has changed.
-# IP is used to restrict SSH access)
+# (this target will not refresh if IP of local machine has changed.
+# IP is used to restrict SSH and API server access)
 cluster.yaml: $(JSONNETFILES)
 	scripts/generate-cluster-config.sh > "$@"
 
@@ -12,7 +12,6 @@ cluster.yaml: $(JSONNETFILES)
 # One step target to install cluster complete with kubeconfig setup
 .PHONY: create-cluster
 create-cluster: init-cluster update-cluster get-admin
-	@echo "*** Your chariot awaits ***"
 
 
 # Delete cluster

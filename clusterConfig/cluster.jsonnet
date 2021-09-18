@@ -61,7 +61,7 @@ local ssh_ip_cidr = std.extVar('ssh_ip_cidr');
       "anonymousAuth": false
     },
     "kubernetesApiAccess": [
-      "0.0.0.0/0"
+       ssh_ip_cidr
     ],
     "kubernetesVersion": settings.k8sVersion,
     "masterPublicName": settings.clusterName,
