@@ -1,6 +1,8 @@
 include Makefile.preflight
-DATESTR=$(date +%F_%H_%M_%S)
+
 JSONNETFILES=$(wildcard clusterConfig/*.*sonnet)
+ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
+NODES_IPS_FILE=$(ROOT_DIR)/nodes-ips.json
 
 # Generates cluster.yaml from jsonnet files found in `clusterConfig`.
 # (this target will not refresh if IP of local machine has changed.
@@ -17,6 +19,7 @@ create-cluster: init-cluster update-cluster get-admin
 # Delete cluster
 .PHONY: delete-cluster-yes
 delete-cluster-yes: check-setup
+	rm -f $(NODES_IPS_FILE)
 	kops delete cluster --yes
 
 
@@ -47,8 +50,7 @@ check-cluster-ready: check-setup
 
 .PHONY: get-ips
 get-ips:
-	kubectl get nodes -o json | jq '[.items[] | {role: .metadata.labels["kubernetes.io/role"], addresses: .status.addresses | map(select(.type=="InternalIP" or .type=="ExternalIP"))}]' > nodes-ips.json
-	jq '.[]|.addresses|map(select(.type=="ExternalIP"))|.[].address' nodes-ips.json > public-ips-nodes.txt && cat public-ips-nodes.txt
+	kubectl get nodes -o json | jq -r '.items[] | {role: .metadata.labels["kubernetes.io/role"], address0: .status.addresses[0].address, address1: .status.addresses[1].address}' | tee $(NODES_IPS_FILE)
 
 .PHONY: get-ec2-ips
 get-ec2-ips: check-setup
