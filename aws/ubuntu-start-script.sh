@@ -53,3 +53,30 @@ EOF
 
 systemctl daemon-reload
 systemctl restart containerd
+
+cat > /etc/apparmor.d/usr.sbin.nginx << "EOF"
+#include <tunables/global>
+
+profile k8s-apparmor-nginx flags=(attach_disconnected) {
+  #include <abstractions/base>
+  #include <abstractions/nameservice>
+  #include <abstractions/openssl>
+
+  capability dac_override,
+
+  /etc/nginx/conf.d/ r,
+  /etc/nginx/mime.types r,
+  /etc/nginx/modules-enabled/ r,
+  /etc/nginx/nginx.conf r,
+  /etc/nginx/sites-available/default r,
+  /etc/nginx/sites-enabled/ r,
+  /usr/sbin/nginx mr,
+  /usr/share/nginx/modules-available/mod-http-image-filter.conf r,
+  /usr/share/nginx/modules-available/mod-http-xslt-filter.conf r,
+  /usr/share/nginx/modules-available/mod-mail.conf r,
+  /usr/share/nginx/modules-available/mod-stream.conf r,
+  /var/log/nginx/access.log w,
+  /var/log/nginx/error.log w,
+
+}
+EOF

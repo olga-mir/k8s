@@ -16,10 +16,11 @@ cluster.yaml: $(JSONNETFILES)
 create-cluster: init-cluster update-cluster get-admin
 
 
-# Delete cluster
+# Delete cluster and supporting files that contain IPs that can change
 .PHONY: delete-cluster-yes
 delete-cluster-yes: check-setup
 	rm -f $(NODES_IPS_FILE)
+	rm -f cluster.yaml
 	kops delete cluster --yes
 
 
