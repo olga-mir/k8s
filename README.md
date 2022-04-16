@@ -5,7 +5,7 @@ This cluster is intended to be short-lived and used for self learning. It is dep
 
 # Supported Versions
 
-This setup has been tested with kubernetes version 1.21.4 and kOps version 1.21.1
+This setup has been tested with kubernetes version 1.22.8 and kOps version 1.23.0
 
 # Prerequisites
 

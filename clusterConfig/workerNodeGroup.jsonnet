@@ -12,7 +12,7 @@ local settings = import 'dev.libsonnet';
   "spec": {
     "image": settings.nodePools[0].image,
     "machineType": settings.nodePools[0].machineType,
-    "maxSize": 1,
+    "maxSize": 2,
     "minSize": 1,
     "nodeLabels": {
       "kops.k8s.io/instancegroup": settings.nodePools[0].name,

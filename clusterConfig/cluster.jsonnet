@@ -52,9 +52,6 @@ local ssh_ip_cidr = std.extVar('ssh_ip_cidr');
       "spec": null
     },
     "kubeAPIServer": {
-      "enableAdmissionPlugins": [
-        "PodSecurityPolicy"
-      ],
       "disableBasicAuth": true
     },
     "kubelet": {
