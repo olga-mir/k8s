@@ -1,13 +1,14 @@
 include Makefile.preflight
 
-JSONNETFILES=$(wildcard clusterConfig/*.*sonnet)
+JSONNETFILES=$(wildcard clusterConfig/mgmt/*.*sonnet)
 ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 NODES_IPS_FILE=$(ROOT_DIR)/nodes-ips.json
+MGMT_CLUSTER_KOPS_CONFIG_FILE=mgmt-cluster.yaml
 
 # Generates cluster.yaml from jsonnet files found in `clusterConfig`.
 # (this target will not refresh if IP of local machine has changed.
 # IP is used to restrict SSH and API server access)
-cluster.yaml: $(JSONNETFILES)
+mgmt-cluster.yaml: $(JSONNETFILES)
 	scripts/generate-cluster-config.sh > "$@"
 
 
@@ -20,13 +21,13 @@ create-cluster: init-cluster update-cluster get-admin
 .PHONY: delete-cluster-yes
 delete-cluster-yes: check-setup
 	rm -f $(NODES_IPS_FILE)
-	rm -f cluster.yaml
+	rm -f $(MGMT_CLUSTER_KOPS_CONFIG_FILE)
 	kops delete cluster --yes
 
 
 .PHONY: init-cluster
 init-cluster: check-setup cluster.yaml
-	kops create -f cluster.yaml
+	kops create -f $(MGMT_CLUSTER_KOPS_CONFIG_FILE)
 
 
 .PHONY: update-cluster

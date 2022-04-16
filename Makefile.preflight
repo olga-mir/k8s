@@ -17,6 +17,10 @@ ifndef KOPS_STATE_STORE
 endif
 	@echo All required env variables are defined
 
+ifeq (, $(shell which jsonnet))
+	$(error "jsonnet command is not found.")
+endif
+
 
 ### Cloud resources that do not require to be torn-down each time, they don't eat moneyz and don't impose security risk (iam role is quite powerful though)
 

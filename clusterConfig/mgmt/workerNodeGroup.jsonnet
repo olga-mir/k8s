@@ -1,4 +1,4 @@
-local settings = import 'dev.libsonnet';
+local settings = import 'mgmt.libsonnet';
 
 {
   "apiVersion": "kops.k8s.io/v1alpha2",

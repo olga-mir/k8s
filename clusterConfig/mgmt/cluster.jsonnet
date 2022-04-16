@@ -1,4 +1,4 @@
-local settings = import 'dev.libsonnet';
+local settings = import 'mgmt.libsonnet';
 
 local ssh_ip_cidr = std.extVar('ssh_ip_cidr');
 
