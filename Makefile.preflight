@@ -1,21 +1,17 @@
 
-# check-setup ensures all prerequisites are satisfied.
-# This target is run before every other target and will block its execution if anything is amiss
-.PHONY: check-setup
-check-setup:
+# validation that all required env variables and tools are setup
 ifndef AWS_PROFILE
-	$(error AWS_PROFILE is undefined)
+  $(error AWS_PROFILE is undefined)
 endif
 ifndef AWS_REGION
-	$(error AWS_REGION is undefined)
+  $(error AWS_REGION is undefined)
 endif
 ifndef STATE_STORE_BUCKET_NAME
-	$(error STATE_STORE_BUCKET_NAME is undefined)
+  $(error STATE_STORE_BUCKET_NAME is undefined)
 endif
 ifndef KOPS_STATE_STORE
-	$(error KOPS_STATE_STORE is undefined, run 'export KOPS_STATE_STORE=s3://${STATE_STORE_BUCKET_NAME}')
+  $(error KOPS_STATE_STORE is undefined, run 'export KOPS_STATE_STORE=s3://${STATE_STORE_BUCKET_NAME}')
 endif
-	@echo All required env variables are defined
 
 ifeq (, $(shell which jsonnet))
 	$(error "jsonnet command is not found.")
@@ -28,7 +24,7 @@ endif
 # This can be done only once, not with every cluster creation
 # This command does not wait on completion, don't attempt to chain in other target's pre-reqs
 .PHONY: kops-iam
-kops-iam: check-setup
+kops-iam:
 	aws cloudformation create-stack --stack-name kops-iam --profile ${AWS_PROFILE} --template-body file://aws/iam.yaml --capabilities CAPABILITY_NAMED_IAM
 
 # Delete kops IAM role. This command does not wait for completion
@@ -38,5 +34,5 @@ delete-kops-iam:
 
 # create bucket where kops will store its state (it must be us-east-1 for some AWSy reason)
 .PHONY: create-cluster-store-bucket
-create-cluster-store-bucket: check-setup
+create-cluster-store-bucket:
 	aws s3api create-bucket --bucket ${STATE_STORE_BUCKET_NAME} --region us-east-1
