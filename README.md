@@ -38,4 +38,10 @@ make delete-cluster-yes
 
 # Cluster API and Flux
 
-The cluster created in the previous section is a fully functional vanilla kubernetes cluster with minimal config and features (this is on purpose). Next it will be converted to CAPI managemnt cluster, install Flux and create couple more clusters. This is going to be fun :)
+The cluster created in the previous section is a fully functional vanilla kubernetes cluster with minimal config and features (this is on purpose). Next it will be converted to CAPI managemnt cluster, install Flux and create couple more clusters.
+(Apparently this is wrong pattern. Recommeded way is to create a temp disposable management cluster and then move it to workload cluster. Bootstrap and pivot: https://cluster-api.sigs.k8s.io/clusterctl/commands/move.html)
+
+Install Flux:
+```
+./scripts/install-flux.sh
+```
