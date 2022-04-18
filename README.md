@@ -19,7 +19,6 @@ Please check out this [doc](docs/setup.md) configure the setup.
 
 Cluster config is generated using jsonnet and then passed as one `cluster.yaml` file to kOps to create the cluster.
 Start by providing cluster params such as name and kOps bucket by copying `clusterConfig/mgmt/overlays/template.libsonnet` to `clusterConfig/mgmt/overlays/mgmt.libsonnet` and editing placeholder values.
-See [clusterConfig README](clusterConfig/README.md) and below section about CAPI for more information.
 
 Generate and inspect the `cluster.yaml`:
 ```
@@ -38,10 +37,4 @@ make delete-cluster-yes
 
 # Cluster API and Flux
 
-The cluster created in the previous section is a fully functional vanilla kubernetes cluster with minimal config and features (this is on purpose). Next it will be converted to CAPI managemnt cluster, install Flux and create couple more clusters.
-(Apparently this is wrong pattern. Recommeded way is to create a temp disposable management cluster and then move it to workload cluster. Bootstrap and pivot: https://cluster-api.sigs.k8s.io/clusterctl/commands/move.html)
-
-Install Flux:
-```
-./scripts/install-flux.sh
-```
+Moved to a new repo (TBD)

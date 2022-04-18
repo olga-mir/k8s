@@ -5,10 +5,6 @@ ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 NODES_IPS_FILE=$(ROOT_DIR)/nodes-ips.json
 MGMT_CLUSTER_KOPS_CONFIG_FILE=cluster.yaml
 
-##################################
-###      MANAGEMENT CLUSTER    ###
-##################################
-
 # Generates cluster.yaml from jsonnet files found in `clusterConfig`.
 # (this target will not refresh if IP of local machine has changed.
 # IP is used to restrict SSH and API server access)
@@ -42,12 +38,6 @@ update-cluster:
 .PHONY: get-admin
 get-admin:
 	kops export kubecfg --admin
-
-
-##################################
-###       WORKLOAD CLUSTER     ###
-##################################
-
 
 
 ##### Helper functions
