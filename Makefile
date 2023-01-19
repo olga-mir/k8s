@@ -25,8 +25,13 @@ delete-cluster-yes:
 	kops delete cluster --yes
 
 
+# kops will try to validate a cluster pointed to by kubectl current config
+# this is undesirable when there are other clusters not managed by kops
+# the `-` at the beginning of the line tells Make to not fail if the command fails
+# in this case it can happen when current-context doesn't exist
 .PHONY: init-cluster
 init-cluster: $(MGMT_CLUSTER_KOPS_CONFIG_FILE)
+	-kubectx -d $(shell kubectx -c)
 	kops create -f $(MGMT_CLUSTER_KOPS_CONFIG_FILE)
 
 
