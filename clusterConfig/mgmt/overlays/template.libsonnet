@@ -1,5 +1,5 @@
 {
-  k8sVersion: "1.22.8",
+  k8sVersion: "1.23.14",
   clusterName: "<MY_CREATIVE_CLUSTER_NAME>.k8s.local",
   configBase: "s3://<KOPS_STATE_STORE_BUCKET>/<MY_CREATIVE_CLUSTER_NAME>.k8s.local",
   controlPlane: {

@@ -72,7 +72,7 @@ local ssh_ip_cidr = std.extVar('ssh_ip_cidr');
     "sshAccess": [
        ssh_ip_cidr
     ],
-    "sshKeyName": "cks",
+    "sshKeyName": "aws",
     "subnets": [
       {
         "cidr": "172.20.32.0/19",

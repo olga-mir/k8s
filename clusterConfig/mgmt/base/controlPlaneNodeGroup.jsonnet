@@ -10,7 +10,6 @@ local settings = import '../overlays/mgmt.libsonnet';
     "name": "master-ap-southeast-2a"
   },
   "spec": {
-    "image": settings.controlPlane.image,
     "machineType": settings.controlPlane.machineType,
     "maxSize": 1,
     "minSize": 1,

@@ -10,10 +10,9 @@ local settings = import '../overlays/mgmt.libsonnet';
     "name": settings.nodePools[0].name,
   },
   "spec": {
-    "image": settings.nodePools[0].image,
     "machineType": settings.nodePools[0].machineType,
-    "maxSize": 2,
-    "minSize": 1,
+    "maxSize": 3,
+    "minSize": 2,
     "nodeLabels": {
       "kops.k8s.io/instancegroup": settings.nodePools[0].name,
     },
