@@ -18,7 +18,7 @@ Please check out this [doc](docs/setup.md) configure the setup.
 # Getting started
 
 Cluster config is generated using jsonnet and then passed as one `cluster.yaml` file to kOps to create the cluster.
-Start by providing cluster params such as name and kOps bucket by copying `clusterConfig/mgmt/overlays/template.libsonnet` to `clusterConfig/mgmt/overlays/mgmt.libsonnet` and editing placeholder values.
+Start by providing cluster params such as name and kOps bucket by copying `aws/kops/overlays/template.libsonnet` to `aws/kops/overlays/dev-cluster.libsonnet` and editing placeholder values.
 
 Generate and inspect the `cluster.yaml`:
 ```

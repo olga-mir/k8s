@@ -1,4 +1,4 @@
-local settings = import '../overlays/mgmt.libsonnet';
+local settings = import '../overlays/dev-cluster.libsonnet';
 
 {
   "apiVersion": "kops.k8s.io/v1alpha2",

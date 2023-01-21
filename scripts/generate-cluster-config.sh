@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eou pipefail
 
-configPath=clusterConfig/mgmt/base
+configPath=aws/kops/base
 
 # generates manifest from all jsonnet files found in `clusterConfig` directory into one yaml file
 # output to stdin
