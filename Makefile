@@ -5,11 +5,18 @@ KOPS_JSONNETFILES_DIR=$(wildcard aws/kops/*/*.*sonnet)
 NODES_IPS_FILE=$(ROOT_DIR)/nodes-ips.json
 KOPS_CLUSTER_CONFIG_FILE=cluster.yaml
 
-# Generates cluster.yaml from jsonnet files found in `clusterConfig`.
+# Generates cluster.yaml from jsonnet files found in `aws/kops/`.
 # (this target will not refresh if IP of local machine has changed.
 # IP is used to restrict SSH and API server access)
 cluster.yaml: $(KOPS_JSONNETFILES_DIR)
 	scripts/generate-cluster-config.sh > "$@"
+
+
+# Always rebuild cluster.yaml file even if input files did not change
+# there are dynamic inputs that may be different between the runs and Make can't detect
+# https://stackoverflow.com/questions/816370/how-do-you-force-a-makefile-to-rebuild-a-target
+.FORCE:
+$(KOPS_CLUSTER_CONFIG_FILE): .FORCE
 
 
 # One step target to install cluster complete with kubeconfig setup
