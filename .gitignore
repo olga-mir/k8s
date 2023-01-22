@@ -1,2 +1,7 @@
 cluster.yaml
 aws/kops/overlays/dev-cluster.libsonnet
+gcp/terraform.tfstate
+gcp/terraform.tfstate*
+gcp/tfplan
+gcp/dev.tfvars
+gcp/.terraform*
