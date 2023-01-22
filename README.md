@@ -1,6 +1,6 @@
 # k8s
 
-This repository contains scripts and manifests to create a kubernetes cluster on AWS using kOps or GKE cluster using terraform.
+This repository contains scripts and manifests to create a kubernetes cluster on **AWS with kOps** or **GKE with terraform**.
 
 The clusters are intended for learning and exploration. They are meant to be short-lived and cleanup Make targets are availble to easily dispose of them.
 
