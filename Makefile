@@ -1,15 +1,22 @@
 include Makefile.preflight
 
-MGMT_JSONNETFILES=$(wildcard clusterConfig/mgmt/*.*sonnet)
 ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
+KOPS_JSONNETFILES_DIR=$(wildcard aws/kops/*/*.*sonnet)
 NODES_IPS_FILE=$(ROOT_DIR)/nodes-ips.json
-MGMT_CLUSTER_KOPS_CONFIG_FILE=cluster.yaml
+KOPS_CLUSTER_CONFIG_FILE=cluster.yaml
 
-# Generates cluster.yaml from jsonnet files found in `clusterConfig`.
+# Generates cluster.yaml from jsonnet files found in `aws/kops/`.
 # (this target will not refresh if IP of local machine has changed.
 # IP is used to restrict SSH and API server access)
-cluster.yaml: $(MGMT_JSONNETFILES)
+cluster.yaml: $(KOPS_JSONNETFILES_DIR)
 	scripts/generate-cluster-config.sh > "$@"
+
+
+# Always rebuild cluster.yaml file even if input files did not change
+# there are dynamic inputs that may be different between the runs and Make can't detect
+# https://stackoverflow.com/questions/816370/how-do-you-force-a-makefile-to-rebuild-a-target
+.FORCE:
+$(KOPS_CLUSTER_CONFIG_FILE): .FORCE
 
 
 # One step target to install cluster complete with kubeconfig setup
@@ -21,7 +28,7 @@ create-cluster: init-cluster update-cluster get-admin
 .PHONY: delete-cluster-yes
 delete-cluster-yes:
 	rm -f $(NODES_IPS_FILE)
-	rm -f $(MGMT_CLUSTER_KOPS_CONFIG_FILE)
+	rm -f $(KOPS_CLUSTER_CONFIG_FILE)
 	kops delete cluster --yes
 
 
@@ -30,9 +37,9 @@ delete-cluster-yes:
 # the `-` at the beginning of the line tells Make to not fail if the command fails
 # in this case it can happen when current-context doesn't exist
 .PHONY: init-cluster
-init-cluster: $(MGMT_CLUSTER_KOPS_CONFIG_FILE)
+init-cluster: $(KOPS_CLUSTER_CONFIG_FILE)
 	-kubectx -d $(shell kubectx -c)
-	kops create -f $(MGMT_CLUSTER_KOPS_CONFIG_FILE)
+	kops create -f $(KOPS_CLUSTER_CONFIG_FILE)
 
 
 .PHONY: update-cluster

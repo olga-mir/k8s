@@ -1,4 +1,4 @@
-local settings = import '../overlays/mgmt.libsonnet';
+local settings = import '../overlays/dev-cluster.libsonnet';
 
 local ssh_ip_cidr = std.extVar('ssh_ip_cidr');
 
