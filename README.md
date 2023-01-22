@@ -2,7 +2,11 @@
 
 This repository contains scripts and manifests to create a kubernetes cluster on AWS using kOps or GKE cluster using terraform.
 
-Both clusters are intended for self learning and experimentation and are meant to be short lived and cleanup make targets are availble for both variants. It is deployed to the default VPC into public subnets. SSH and API server access is allowed only from the same IP address that it was created from, therefore it is possible to get locked out if IP changes and will require restore via web console. This clusters are not hardened for security primarily for lack of time to develop them and the fact that they are only needed for short periods of time.
+The clusters are intended for learning and exploration. They are meant to be short-lived and cleanup Make targets are availble to easily dispose of them.
+
+AWS cluster is deployed to the default VPC into public subnets. SSH and API server access is allowed only from the same IP address that it was created from, therefore it is possible to get locked out if IP changes and will require restore via web console.
+
+These clusters are not hardened for security, primarily for lack of time and the fact that they are only up for short periods of time.
 
 # Supported Versions
 
