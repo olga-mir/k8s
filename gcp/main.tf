@@ -1,3 +1,10 @@
+module "vpc" {
+  source = "./modules/network"
+
+  project_id = var.project_id
+  region     = var.region
+  network    = var.network
+}
 
 # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/container_cluster
 module "gke" {
@@ -9,22 +16,22 @@ module "gke" {
   name                       = var.cluster_name
   region                     = var.region
   zones                      = ["${var.region}-b"]
-  network                    = "test-vpc"
+  network                    = var.network
   subnetwork                 = "cluster-subnetwork"
-  ip_range_pods              = "pod-range"
+  ip_range_pods              = "pod-range" #vpc.google_compute_subnetwork.cluster_subnetwork
   ip_range_services          = "svc-range"
   network_policy             = true
   horizontal_pod_autoscaling = true
+  default_max_pods_per_node  = 32
 
   node_pools = [
     {
       name               = "default-node-pool"
-      machine_type       = "e2-medium"
+      machine_type       = "e2-standard-2"
       node_locations     = "${var.region}-b"
-      min_count          = 1
+      min_count          = 2
       max_count          = 3
       local_ssd_count    = 0
-      spot               = false
       disk_size_gb       = 50
       disk_type          = "pd-standard"
       image_type         = "COS_CONTAINERD"
@@ -33,8 +40,9 @@ module "gke" {
       auto_repair        = true
       auto_upgrade       = true
       service_account    = "project-service-account@${var.project_id}.iam.gserviceaccount.com"
-      preemptible        = false
-      initial_node_count = 1
+      spot               = true
+      initial_node_count = 2
+      # datapath_provider  = "ADVANCED_DATAPATH"
     },
   ]
 
