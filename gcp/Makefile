@@ -4,6 +4,7 @@ TF_PLAN_FILE=$(ROOT_DIR)/tfplan
 
 .PHONY: tf-plan
 tf-plan: $(ROOT_DIR)/*.tfvars $(ROOT_DIR)/*.tf
+	terraform fmt
 	terraform plan -var-file=dev.tfvars -out=$(TF_PLAN_FILE)
 
 

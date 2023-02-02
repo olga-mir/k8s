@@ -4,6 +4,7 @@ module "vpc" {
   project_id = var.project_id
   region     = var.region
   network    = var.network
+  subnetwork = var.subnetwork
 }
 
 # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/container_cluster
@@ -11,13 +12,17 @@ module "gke" {
   source  = "terraform-google-modules/kubernetes-engine/google"
   version = "24.1.0"
 
+  depends_on = [
+    module.vpc
+  ]
+
   kubernetes_version         = var.k8s_version
   project_id                 = var.project_id
   name                       = var.cluster_name
   region                     = var.region
   zones                      = ["${var.region}-b"]
   network                    = var.network
-  subnetwork                 = "cluster-subnetwork"
+  subnetwork                 = var.subnetwork
   ip_range_pods              = "pod-range" #vpc.google_compute_subnetwork.cluster_subnetwork
   ip_range_services          = "svc-range"
   network_policy             = true

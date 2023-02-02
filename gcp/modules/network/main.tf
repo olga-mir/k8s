@@ -8,8 +8,11 @@ resource "google_compute_network" "main_vpc" {
 }
 
 resource "google_compute_subnetwork" "cluster_subnetwork" {
+  depends_on = [
+    google_compute_network.main_vpc
+  ]
   ip_cidr_range              = "10.0.0.0/8"
-  name                       = "cluster-subnetwork"
+  name                       = var.subnetwork
   network                    = var.network
   private_ip_google_access   = true
   private_ipv6_google_access = "DISABLE_GOOGLE_ACCESS"
@@ -18,12 +21,12 @@ resource "google_compute_subnetwork" "cluster_subnetwork" {
   region                     = var.region
 
   secondary_ip_range {
-    ip_cidr_range = "10.1.0.0/16"
+    ip_cidr_range = "192.168.64.0/18"
     range_name    = "pod-range"
   }
 
   secondary_ip_range {
-    ip_cidr_range = "10.2.0.0/16"
+    ip_cidr_range = "192.168.128.0/18"
     range_name    = "svc-range"
   }
 

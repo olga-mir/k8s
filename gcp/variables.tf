@@ -20,3 +20,7 @@ variable "cluster_name" {
 variable "network" {
   type = string
 }
+
+variable "subnetwork" {
+  type = string
+}
