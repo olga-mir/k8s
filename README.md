@@ -10,13 +10,15 @@ These clusters are not hardened for security, primarily for lack of time and the
 
 # Supported Versions
 
-AWS: tested with kubernetes 1.23.14 and kOps 1.25.3
-GCP: tested with GKE 1.23.13
+* AWS: tested with kubernetes 1.23.14 and kOps 1.25.3
+* GCP: tested with GKE 1.23.13
 
 # Repository Structure
 
 The clusters defined in this repo are standalone and it is easier to treat them as such by completely separating the code into unrelated folders. For cluster fleet demo check the last section of this README.
 It is intended to work from within the respective folders, not the repo root.
+
+Both AWS and GCP folders include `foundations` subdirectory that hosts resources like VPC, IAM, Firewall definitions, etc. These resources do not need to be recreated each time so they are managed separately.
 
 # AWS (not EKS)
 
@@ -70,22 +72,30 @@ Currently not all variables have been abstracted away and the tf code has hardco
 
 ```
 cd gcp
-cp template.tfvars dev.tfvars
+envsubst < foundation/template-tfvars > foundation/dev.tfvars
+envsubst < template-tfvars > dev.tfvars
 ```
 
-Provide your values in `dev.tfvars` vars file.
+To create a VPC (only needed once):
+```
+make create-vpc
+```
 
-As this is a short lived cluster that is designed to be deleted at the end of learning session, there is no point in keeping tf plan in persistent storage, therefore it is stored locally in the same directory.
 To create a cluster:
 
 ```
-make tf-apply
+make create-gke
 ```
 This will create tf plan if it doesn't exist or if dependencies changed
 
-To delete the cluster and other resources:
+To delete the cluster:
 ```
 make cleanup
+```
+
+To delete the cluster and supporting resources:
+```
+make full-cleanup
 ```
 
 

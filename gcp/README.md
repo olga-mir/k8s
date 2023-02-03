@@ -2,7 +2,8 @@
 
 ## Init
 
-setup following env variables, then generate tfvar file using `envsubst`
+Setup env variables, then generate tfvar files using `envsubst`
+
 ```
 GCP_PROJECT
 GCP_REGION
@@ -20,7 +21,7 @@ $ envsubst < template-tfvars > dev.tfvars
 
 ## Toolbox
 
-Like admin container on AWS Busybox, GCP COS has `toolbox` many even basic things are missing there.
+Like admin container on AWS BottleRocket, GCP COS has `toolbox` many even basic things are missing there.
 
 ```
 apt-get install tree
