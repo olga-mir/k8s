@@ -1,10 +1,6 @@
-module "vpc" {
-  source = "./modules/network"
-
-  project_id = var.project_id
-  region     = var.region
-  network    = var.network
-  subnetwork = var.subnetwork
+data "google_compute_network" "vpc" {
+  name    = var.network
+  project = var.project_id
 }
 
 # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/container_cluster
@@ -13,7 +9,7 @@ module "gke" {
   version = "24.1.0"
 
   depends_on = [
-    module.vpc
+    data.google_compute_network.vpc
   ]
 
   kubernetes_version         = var.k8s_version
@@ -21,7 +17,7 @@ module "gke" {
   name                       = var.cluster_name
   region                     = var.region
   zones                      = ["${var.region}-b"]
-  network                    = var.network
+  network                    = data.google_compute_network.vpc.name
   subnetwork                 = var.subnetwork
   ip_range_pods              = "pod-range"
   ip_range_services          = "svc-range"
