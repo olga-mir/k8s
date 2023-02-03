@@ -13,15 +13,28 @@ These clusters are not hardened for security, primarily for lack of time and the
 AWS: tested with kubernetes 1.23.14 and kOps 1.25.3
 GCP: tested with GKE 1.23.13
 
-# Prerequisites
+# Repository Structure
+
+The clusters defined in this repo are standalone and it is easier to treat them as such by completely separating the code into unrelated folders. For cluster fleet demo check the last section of this README.
+It is intended to work from within the respective folders, not the repo root.
+
+# AWS (not EKS)
+
+## Prerequisites
 
 You needs access to AWS account with sufficient permissions to create a role for kOps, create cluster resources, upload to S3 bucket.
 AWS access needs to be configured and bucket name stored in `STATE_STORE_BUCKET_NAME` env var.
 
-Tools: kOps, jsonnet, Makefile, AWS cli.
+* kOps
+* jsonnet
+* Makefile
+* AWS CLI
+
 Please check out this [doc](docs/setup.md) configure the setup.
 
-# AWS Cluster (not EKS)
+## Deploy
+
+:warning: The following commands are meant to be run from `./aws` directory.
 
 Cluster config is generated using jsonnet and then passed as one `cluster.yaml` file to kOps to create the cluster.
 Start by providing cluster params such as name and kOps bucket by copying `aws/kops/overlays/template.libsonnet` to `aws/kops/overlays/dev-cluster.libsonnet` and editing placeholder values.
@@ -41,7 +54,17 @@ Cleanup:
 make delete-cluster-yes
 ```
 
-# GKE Cluster
+# GCP
+
+## Prerequisites
+
+* glcoud
+* terraform
+* Makefile
+
+## Deploy
+
+:warning: The following commands are meant to be run from `./gcp` directory.
 
 Currently not all variables have been abstracted away and the tf code has hardcoded values for my VPC, but it does create a valid GKE cluster when these values are set correctly.
 
