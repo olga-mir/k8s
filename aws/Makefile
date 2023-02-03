@@ -9,7 +9,7 @@ KOPS_CLUSTER_CONFIG_FILE=cluster.yaml
 # (this target will not refresh if IP of local machine has changed.
 # IP is used to restrict SSH and API server access)
 cluster.yaml: $(KOPS_JSONNETFILES_DIR)
-	scripts/generate-cluster-config.sh > "$@"
+	./generate-cluster-config.sh > "$@"
 
 
 # Always rebuild cluster.yaml file even if input files did not change

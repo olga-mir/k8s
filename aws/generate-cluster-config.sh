@@ -1,7 +1,8 @@
 #!/bin/bash
 set -eou pipefail
 
-configPath=aws/kops/base
+REPO_ROOT=$(git rev-parse --show-toplevel)
+configPath=$REPO_ROOT/aws/kops/base
 
 # generates manifest from all jsonnet files found in `clusterConfig` directory into one yaml file
 # output to stdin
