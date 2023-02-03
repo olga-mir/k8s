@@ -1,0 +1,6 @@
+k8s_version  = "1.24.8"
+
+project_id   = "$GCP_PROJECT"
+region       = "$GCP_REGION"
+network      = "$GCP_NETWORK_NAME"
+cluster_name = "$GKE_CLUSTER_NAME"

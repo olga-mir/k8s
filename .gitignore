@@ -1,7 +1,23 @@
-cluster.yaml
+# auto-generated kops cluster config file and contains non-public data
+aws/cluster.yaml
+
+# inputs to kops cluster config and contains non-public data
 aws/kops/overlays/dev-cluster.libsonnet
+
+# contains non-public data
+gcp/dev.tfvars
+gcp/foundation/dev.tfvars
+
+# terraform generated files
 gcp/terraform.tfstate
 gcp/terraform.tfstate*
 gcp/tfplan
-gcp/dev.tfvars
 gcp/.terraform*
+gcp/foundation/terraform.tfstate
+gcp/foundation/terraform.tfstate*
+gcp/foundation/tfplan
+gcp/foundation/.terraform*
+
+# setup env vars
+aws/.setup-env
+gcp/.setup-env
