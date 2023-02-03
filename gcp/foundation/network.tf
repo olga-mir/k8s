@@ -32,3 +32,21 @@ resource "google_compute_subnetwork" "cluster_subnetwork" {
 
   stack_type = "IPV4_ONLY"
 }
+
+resource "google_compute_firewall" "allow_iap_ssh_ingress" {
+  depends_on = [
+    google_compute_network.main_vpc
+  ]
+
+  allow {
+    ports    = ["22"]
+    protocol = "tcp"
+  }
+
+  direction     = "INGRESS"
+  name          = "allow-iap-ssh-ingress"
+  network       = var.network
+  priority      = 1000
+  project       = var.project_id
+  source_ranges = ["35.235.240.0/20"]
+}
