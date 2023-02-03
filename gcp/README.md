@@ -1,8 +1,26 @@
 # GKE cluster
 
+## Init
+
+setup following env variables, then generate tfvar file using `envsubst`
+```
+GCP_PROJECT
+GCP_REGION
+GCP_NETWORK_NAME
+GKE_CLUSTER_NAME
+```
+
+Run:
+
+```
+$ envsubst < foundation/template-tfvars > foundation/dev.tfvars
+$ envsubst < template-tfvars > dev.tfvars
+```
+
 
 ## Toolbox
 
+Like admin container on AWS Busybox, GCP COS has `toolbox` many even basic things are missing there.
 
 ```
 apt-get install tree

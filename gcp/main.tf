@@ -23,7 +23,7 @@ module "gke" {
   zones                      = ["${var.region}-b"]
   network                    = var.network
   subnetwork                 = var.subnetwork
-  ip_range_pods              = "pod-range" #vpc.google_compute_subnetwork.cluster_subnetwork
+  ip_range_pods              = "pod-range"
   ip_range_services          = "svc-range"
   network_policy             = true
   horizontal_pod_autoscaling = true
@@ -47,7 +47,7 @@ module "gke" {
       service_account    = "project-service-account@${var.project_id}.iam.gserviceaccount.com"
       spot               = true
       initial_node_count = 2
-      # datapath_provider  = "ADVANCED_DATAPATH"
+      datapath_provider  = "ADVANCED_DATAPATH"
     },
   ]
 

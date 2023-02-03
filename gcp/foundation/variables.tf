@@ -15,3 +15,4 @@ variable "network" {
 variable "subnetwork" {
   type = string
 }
+
