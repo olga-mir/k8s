@@ -38,6 +38,7 @@ $(TF_PLAN_FILE): tf-plan-gke
 .PHONY: create-gke
 create-gke: $(TF_PLAN_FILE)
 	terraform apply -input=false -auto-approve $(TF_PLAN_FILE)
+	gcloud container clusters get-credentials $${CLUSTER_NAME} --region $${GCP_REGION} --project $${GCP_PROJECT}
 
 
 .PHONY: cleanup

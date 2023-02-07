@@ -33,6 +33,10 @@ apt install psmisc
 $ sudo apt-get install -y make gcc libssl-dev bc libelf-dev libcap-dev \
   clang gcc-multilib llvm libncurses5-dev git pkg-config libmnl-dev bison flex \
   graphviz
+
+# bpf based performance tools.
+echo deb http://cloudfront.debian.net/debian sid main >> /etc/apt/sources.list
+sudo apt-get install -y bpfcc-tools libbpfcc libbpfcc-dev linux-headers-$(uname -r)
 ```
 
 ## Debug IAP connections

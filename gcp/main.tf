@@ -23,7 +23,8 @@ module "gke" {
   ip_range_services          = "svc-range"
   network_policy             = true
   horizontal_pod_autoscaling = true
-  default_max_pods_per_node  = 32
+  default_max_pods_per_node  = 64
+  datapath_provider  = "ADVANCED_DATAPATH"
 
   node_pools = [
     {
@@ -43,7 +44,6 @@ module "gke" {
       service_account    = "project-service-account@${var.project_id}.iam.gserviceaccount.com"
       spot               = true
       initial_node_count = 2
-      datapath_provider  = "ADVANCED_DATAPATH"
     },
   ]
 
