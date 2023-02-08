@@ -24,7 +24,7 @@ module "gke" {
   network_policy             = true
   horizontal_pod_autoscaling = true
   default_max_pods_per_node  = 64
-  datapath_provider  = "ADVANCED_DATAPATH"
+  datapath_provider          = "ADVANCED_DATAPATH"
 
   node_pools = [
     {
