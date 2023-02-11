@@ -21,7 +21,6 @@ module "gke" {
   subnetwork                 = var.subnetwork
   ip_range_pods              = "pod-range"
   ip_range_services          = "svc-range"
-  network_policy             = true
   horizontal_pod_autoscaling = true
   default_max_pods_per_node  = 64
   datapath_provider          = "ADVANCED_DATAPATH"

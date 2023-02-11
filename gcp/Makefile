@@ -49,6 +49,6 @@ delete-gke:
 
 
 # Complete teardown - delete cluster and all resources in foundation.
-.PHONY: full-cleanup
-full-cleanup: delete-gke
+.PHONY: delete-all
+delete-all: delete-gke
 	$(MAKE) -C $(ROOT_DIR)/foundation cleanup
