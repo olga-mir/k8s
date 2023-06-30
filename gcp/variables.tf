@@ -8,13 +8,14 @@ variable "region" {
   type        = string
 }
 
-variable "k8s_version" {
-  description = "Kubernetes version"
+variable "channel" {
+  description = "Release channel"
   type        = string
 }
 
 variable "cluster_name" {
-  type = string
+  type    = string
+  default = "dev" // TODO - how did it get broken?
 }
 
 variable "network" {

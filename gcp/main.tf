@@ -12,7 +12,9 @@ module "gke" {
     data.google_compute_network.vpc
   ]
 
-  kubernetes_version         = var.k8s_version
+  release_channel = var.channel
+
+  // TODO - add min_master_version with available version datasource
   project_id                 = var.project_id
   name                       = var.cluster_name
   region                     = var.region
