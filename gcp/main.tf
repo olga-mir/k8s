@@ -26,6 +26,7 @@ module "gke" {
   horizontal_pod_autoscaling = true
   default_max_pods_per_node  = 64
   datapath_provider          = "ADVANCED_DATAPATH"
+  kubernetes_version         = "1.25.9"
 
   node_pools = [
     {
