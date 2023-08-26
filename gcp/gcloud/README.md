@@ -1,0 +1,1 @@
+Scripts to create a GKE cluster with `gcloud` command. Terraform provider doesn't support advanced or recent features, e.g. at this stage it is not possible to create a cgroupv2 cluster while it is possible with gcloud: https://cloud.google.com/kubernetes-engine/docs/how-to/node-system-config#cgroup-mode-options
