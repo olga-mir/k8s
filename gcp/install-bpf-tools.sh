@@ -35,7 +35,6 @@ ln -sf /usr/src/linux /lib/modules/$(uname -r)/build
 cd /usr/src/linux/tools/bpf/bpftool
 make
 
-
 # NOTES
 
 
