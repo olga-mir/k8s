@@ -1,0 +1,8 @@
+# https://cloud.google.com/kubernetes-engine/docs/how-to/node-system-config
+kubeletConfig:
+  cpuManagerPolicy: static
+linuxConfig:
+  cgroupMode: 'CGROUP_MODE_V2'
+  sysctl:
+    net.core.somaxconn: '2048'
+    net.ipv4.tcp_rmem: '4096 87380 6291456'
