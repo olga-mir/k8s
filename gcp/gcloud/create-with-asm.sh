@@ -9,11 +9,11 @@ if [ -z "$ZONE" ] || \
    [ -z "$CLUSTER_VPC" ] || \
    [ -z "$PROJECT_ID" ] || \
    [ -z "$PROJECT_NUMBER" ] || \
+   [ -z "$CLUSTER_NAME" ] || \
    [ -z "$SUBNET_DEV" ]; then
   echo "Error required env variables are not set" && exit 1
 fi
 
-CLUSTER_NAME="asm1"
 CLUSTER_VERSION="1.27.3-gke.1700"
 NODEPOOL_NAME="apps"
 MACHINE_TYPE="e2-standard-4"
@@ -61,3 +61,50 @@ gcloud container fleet mesh update \
   --management automatic \
   --memberships $CLUSTER_NAME-membership \
   --project $PROJECT_ID
+
+
+echo "It can take about 10 minutes for Anthos Service Mesh to provision and be ready to use on the cluster."
+echo "Pause for 5mi before testing the status. You can run following command to check the progress:"
+echo "gcloud container fleet mesh describe --project $PROJECT_ID | yq '.membershipStates[] | {"controlPlane": .servicemesh.controlPlaneManagement.state, "dataPlane": .servicemesh.dataPlaneManagement.state}'"
+
+sleep 300
+retries=15
+
+while [[ $retries > 0 ]] && asm_cp=$(gcloud container fleet mesh describe --project $PROJECT_ID | yq '.membershipStates[] | .servicemesh.controlPlaneManagement.state') && [ $asm_cp != "ACTIVE" ] ; do
+  echo $(date '+%F %H:%M:%S') Controlplane status $asm_cp. Re-try in 30s... && retries=$((retries-1)) && sleep 30
+done
+
+# Dataplane should be ready soon after the Controlplane is already running
+
+while [[ $retries > 0 ]] && asm_dp=$(gcloud container fleet mesh describe --project $PROJECT_ID | yq '.membershipStates[] | .servicemesh.dataPlaneManagement.state') && [ $asm_dp != "ACTIVE" ] ; do
+  echo $(date '+%F %H:%M:%S') Dataplane status $asm_dp. Re-try in 15s... && retries=$((retries-1)) && sleep 15
+done
+
+# Redacted sample output:
+
+# % gcloud container fleet mesh describe --project $PROJECT_ID
+# createTime: '<time>'
+# membershipSpecs:
+#   projects/<PROJECT_NUM>/locations/global/memberships/<CLUSTER_NAME>-membership:
+#     mesh:
+#       management: MANAGEMENT_AUTOMATIC
+# membershipStates:
+#   projects/<PROJECT_NUM>/locations/global/memberships/<CLUSTER_NAME>-membership:
+#     servicemesh:
+#       controlPlaneManagement:
+#         details:
+#           - code: REVISION_READY
+#             details: 'Ready: asm-managed-stable'
+#         state: ACTIVE
+#       dataPlaneManagement:
+#         details:
+#           - code: OK
+#             details: Service is running.
+#         state: ACTIVE
+#     state:
+#       code: OK
+#       description: 'Revision(s) ready for use: asm-managed-stable.'
+#       updateTime: '<time>'
+# name: projects/<PROJECT_ID>/locations/global/features/servicemesh
+# resourceState:
+#   state: ACTIVE
