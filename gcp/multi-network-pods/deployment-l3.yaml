@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: l3
+  name: l3
+  namespace: multi-network
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: l3
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: l3
+        k8s-app: l3
+      annotations:
+        networking.gke.io/default-interface: 'eth0'
+        networking.gke.io/interfaces: |
+          [
+            {
+              "interfaceName": "eth0",
+              "network": "default"
+            },
+            {
+              "interfaceName": "eth1",
+              "network": "l3-network"
+            }
+          ]
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+      - image: busybox
+        command:
+        - sleep
+        - "100000"
+        imagePullPolicy: Always
+        name: bb
+        resources:
+          limits:
+            memory: 200Mi
+          requests:
+            cpu: 100m
+            memory: 50Mi
+      hostNetwork: true
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      nodeSelector:
+        cloud.google.com/gke-nodepool: l3
