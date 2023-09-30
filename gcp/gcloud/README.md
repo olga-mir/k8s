@@ -12,7 +12,7 @@ Setup env vars. Create a setup file and `source` in the working terminal session
 ```
 export PROJECT_NUMBER=
 export PROJECT_ID=
-export CLUSTER_NAME=
+export GKE_CLUSTER_NAME=
 
 # this is not shared VPC model
 export CLUSTER_VPC=

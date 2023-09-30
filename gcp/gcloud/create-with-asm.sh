@@ -9,7 +9,7 @@ if [ -z "$ZONE" ] || \
    [ -z "$CLUSTER_VPC" ] || \
    [ -z "$PROJECT_ID" ] || \
    [ -z "$PROJECT_NUMBER" ] || \
-   [ -z "$CLUSTER_NAME" ] || \
+   [ -z "$GKE_CLUSTER_NAME" ] || \
    [ -z "$SUBNET_DEV" ]; then
   echo "Error required env variables are not set" && exit 1
 fi
@@ -20,7 +20,7 @@ MACHINE_TYPE="e2-standard-4"
 CLUSTER_LOCATION=$ZONE
 
 # there is no way in `gcloud` to create a cluster without default nodepool
-gcloud container clusters create $CLUSTER_NAME \
+gcloud container clusters create $GKE_CLUSTER_NAME \
     --cluster-version=$CLUSTER_VERSION \
     --zone=$ZONE \
     --node-locations=$ZONE \
@@ -37,12 +37,12 @@ gcloud container clusters create $CLUSTER_NAME \
 
 # this command can't run in background because there is not enough quota
 gcloud container node-pools delete default-pool \
-    --cluster=$CLUSTER_NAME \
+    --cluster=$GKE_CLUSTER_NAME \
     --zone=$ZONE \
     --quiet
 
 gcloud container node-pools create $NODEPOOL_NAME \
-    --cluster=$CLUSTER_NAME \
+    --cluster=$GKE_CLUSTER_NAME \
     --zone=$ZONE \
     --node-locations=$ZONE \
     --location-policy=BALANCED \
@@ -52,14 +52,14 @@ gcloud container node-pools create $NODEPOOL_NAME \
 
 gcloud container fleet mesh enable --project $PROJECT_ID
 
-gcloud container fleet memberships register $CLUSTER_NAME-membership \
-  --gke-cluster=$CLUSTER_LOCATION/$CLUSTER_NAME \
+gcloud container fleet memberships register $GKE_CLUSTER_NAME-membership \
+  --gke-cluster=$CLUSTER_LOCATION/$GKE_CLUSTER_NAME \
   --enable-workload-identity \
   --project $PROJECT_ID
 
 gcloud container fleet mesh update \
   --management automatic \
-  --memberships $CLUSTER_NAME-membership \
+  --memberships $GKE_CLUSTER_NAME-membership \
   --project $PROJECT_ID
 
 
@@ -85,11 +85,11 @@ done
 # % gcloud container fleet mesh describe --project $PROJECT_ID
 # createTime: '<time>'
 # membershipSpecs:
-#   projects/<PROJECT_NUM>/locations/global/memberships/<CLUSTER_NAME>-membership:
+#   projects/<PROJECT_NUM>/locations/global/memberships/<GKE_CLUSTER_NAME>-membership:
 #     mesh:
 #       management: MANAGEMENT_AUTOMATIC
 # membershipStates:
-#   projects/<PROJECT_NUM>/locations/global/memberships/<CLUSTER_NAME>-membership:
+#   projects/<PROJECT_NUM>/locations/global/memberships/<GKE_CLUSTER_NAME>-membership:
 #     servicemesh:
 #       controlPlaneManagement:
 #         details:

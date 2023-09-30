@@ -11,7 +11,7 @@ if [ -z "$ZONE" ] || \
   echo "Error required env variables are not set" && exit 1
 fi
 
-CLUSTER_NAME="multi-network"
+GKE_CLUSTER_NAME="multi-network"
 CLUSTER_VERSION="1.27.3-gke.1700"
 NODEPOOL_DEVICE="device"
 NODEPOOL_L3="l3"
@@ -24,7 +24,7 @@ NODEPOOL_L3="l3"
 
 # there is no way in `gcloud` to create a cluster without default nodepool
 # use `spot` and delete this nodepool after creation
-gcloud container clusters create $CLUSTER_NAME \
+gcloud container clusters create $GKE_CLUSTER_NAME \
     --cluster-version=$CLUSTER_VERSION \
     --zone=$ZONE \
     --node-locations=$ZONE \
@@ -44,14 +44,14 @@ gcloud container clusters create $CLUSTER_NAME \
 
 # this command can't run in background because there is not enough quota
 gcloud container node-pools delete default-pool \
-    --cluster=$CLUSTER_NAME \
+    --cluster=$GKE_CLUSTER_NAME \
     --zone=$ZONE \
     --quiet
 
 # ERROR: (gcloud.container.node-pools.create) ResponseError: code=400,
 # message=Number of vCPUs (2) must be greater than or equal to the number of node interfaces (3).
 gcloud container node-pools create $NODEPOOL_DEVICE \
-    --cluster=$CLUSTER_NAME \
+    --cluster=$GKE_CLUSTER_NAME \
     --zone=$ZONE \
     --node-locations=$ZONE \
     --location-policy=BALANCED \
@@ -63,7 +63,7 @@ gcloud container node-pools create $NODEPOOL_DEVICE \
 
 # L3: additional-pod-network
 gcloud container node-pools create $NODEPOOL_L3 \
-    --cluster=$CLUSTER_NAME \
+    --cluster=$GKE_CLUSTER_NAME \
     --zone=$ZONE \
     --node-locations=$ZONE \
     --location-policy=BALANCED \
