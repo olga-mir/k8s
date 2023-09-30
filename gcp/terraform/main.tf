@@ -26,11 +26,13 @@ module "gke" {
   horizontal_pod_autoscaling = true
   default_max_pods_per_node  = 64
   datapath_provider          = "ADVANCED_DATAPATH"
-  kubernetes_version         = "1.25.9"
+  kubernetes_version         = "1.26.7"
+  configure_ip_masq          = false
+  remove_default_node_pool   = true
 
   node_pools = [
     {
-      name               = "default-node-pool"
+      name               = "test-nodepool"
       machine_type       = "e2-standard-2"
       node_locations     = "${var.region}-b"
       min_count          = 2
@@ -56,18 +58,10 @@ module "gke" {
     ]
   }
 
-  node_pools_labels = {
-    all = {}
-
-    default-node-pool = {
-      default-node-pool = true
-    }
-  }
-
   node_pools_metadata = {
     all = {}
 
-    default-node-pool = {
+    test-nodepool = {
       node-pool-metadata-custom-value = "my-node-pool"
     }
   }
@@ -75,9 +69,9 @@ module "gke" {
   node_pools_taints = {
     all = []
 
-    default-node-pool = [
+    test-nodepool = [
       {
-        key    = "default-node-pool"
+        key    = "test-nodepool"
         value  = true
         effect = "PREFER_NO_SCHEDULE"
       },
@@ -87,8 +81,8 @@ module "gke" {
   node_pools_tags = {
     all = []
 
-    default-node-pool = [
-      "default-node-pool",
+    test-nodepool = [
+      "test-nodepool",
     ]
   }
 }

@@ -71,7 +71,7 @@ make delete-cluster-yes
 Currently not all variables have been abstracted away and the tf code has hardcoded values for my VPC, but it does create a valid GKE cluster when these values are set correctly.
 
 ```
-cd gcp
+cd gcp/terraform
 envsubst < foundation/template-tfvars > foundation/dev.tfvars
 envsubst < template-tfvars > dev.tfvars
 ```
