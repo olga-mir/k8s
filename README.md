@@ -10,7 +10,7 @@ These clusters are not hardened for security, primarily for lack of time and the
 
 # Supported Versions
 
-* AWS: tested with kubernetes 1.23.14 and kOps 1.25.3
+* AWS: tested with kubernetes 1.28.3 and kOps 1.28.0
 * GCP: tested with GKE 1.23.13
 
 # Repository Structure
@@ -36,17 +36,9 @@ Please check out this [doc](docs/setup.md) configure the setup.
 
 ## Deploy
 
-:warning: The following commands are meant to be run from `./aws` directory.
+Detailed instructions provided in [./aws/README.md](./aws/README.md)
 
-Cluster config is generated using jsonnet and then passed as one `cluster.yaml` file to kOps to create the cluster.
-Start by providing cluster params such as name and kOps bucket by copying `aws/kops/overlays/template.libsonnet` to `aws/kops/overlays/dev-cluster.libsonnet` and editing placeholder values.
-
-Generate and inspect the `cluster.yaml`:
-```
-make cluster.yaml
-```
-
-Create cluster (it will generate cluster config if required) and export kubeconfig in default location:
+Create cluster and export kubeconfig in default location:
 ```
 make create-cluster
 ```

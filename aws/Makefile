@@ -1,14 +1,15 @@
 include Makefile.preflight
 
-ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
+REPO_ROOT:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 KOPS_JSONNETFILES_DIR=$(wildcard aws/kops/*/*.*sonnet)
-NODES_IPS_FILE=$(ROOT_DIR)/nodes-ips.json
+NODES_IPS_FILE=$(REPO_ROOT)/nodes-ips.json
 KOPS_CLUSTER_CONFIG_FILE=cluster.yaml
 
 # Generates cluster.yaml from jsonnet files found in `aws/kops/`.
 # (this target will not refresh if IP of local machine has changed.
 # IP is used to restrict SSH and API server access)
-cluster.yaml: $(KOPS_JSONNETFILES_DIR)
+$(KOPS_CLUSTER_CONFIG_FILE): $(KOPS_JSONNETFILES_DIR)
+	envsubst < $(REPO_ROOT)/kops/overlays/template.libsonnet > $(REPO_ROOT)/kops/overlays/dev-cluster.libsonnet
 	./generate-cluster-config.sh > "$@"
 
 
@@ -29,7 +30,7 @@ create-cluster: init-cluster update-cluster get-admin
 delete-cluster-yes:
 	rm -f $(NODES_IPS_FILE)
 	rm -f $(KOPS_CLUSTER_CONFIG_FILE)
-	kops delete cluster --yes
+	kops delete cluster --name $(KOPS_CLUSTER_NAME) --yes
 
 
 # kops will try to validate a cluster pointed to by kubectl current config
@@ -44,23 +45,19 @@ init-cluster: $(KOPS_CLUSTER_CONFIG_FILE)
 
 .PHONY: update-cluster
 update-cluster:
-	kops update cluster --yes
+	kops update cluster --name $(KOPS_CLUSTER_NAME) --yes
 
 
 .PHONY: get-admin
 get-admin:
-	kops export kubecfg --admin
+	kops export kubecfg --admin --name $(KOPS_CLUSTER_NAME)
 
 
 ##### Helper functions
 
-.PHONY: debug
-debug:
-	@echo debug
-
 .PHONY: check-cluster-ready
 check-cluster-ready:
-	kops validate cluster
+	kops validate cluster --name $(KOPS_CLUSTER_NAME)
 
 .PHONY: get-ips
 get-ips:

@@ -1,15 +1,15 @@
 {
-  k8sVersion: "1.23.14",
-  clusterName: "<MY_CREATIVE_CLUSTER_NAME>.k8s.local",
-  configBase: "s3://<KOPS_STATE_STORE_BUCKET>/<MY_CREATIVE_CLUSTER_NAME>.k8s.local",
+  k8sVersion: "1.28.3",
+  clusterName: "$KOPS_CLUSTER_NAME",
+  configBase: "s3://${STATE_STORE_BUCKET_NAME}/${KOPS_CLUSTER_NAME}.k8s.local",
   controlPlane: {
-    image: "<IMAGE_FOR_CONTROL_PLANE>",
+    image: "$CONTROL_PLANE_IMAGE",
     machineType: "t3.medium",
   },
   nodePools: [
     {
       name: "default-ig",
-      image: "IMAGE_FOR_WORKER_NODES",
+      image: "$WORKER_NODES_IMAGE",
       machineType: "t3.medium",
     }
   ]
