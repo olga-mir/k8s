@@ -10,8 +10,9 @@ These clusters are not hardened for security, primarily for lack of time and the
 
 # Supported Versions
 
-* AWS: tested with kubernetes 1.28.3 and kOps 1.28.0
-* GCP: tested with GKE 1.23.13
+* AWS (kOps): k8s - 1.28.3; kOps - 1.28.0
+* AWS (EKS): k8s - 1.27, eksctl - 0.164.0
+* GCP (GKE): k8s - 1.23.13
 
 # Repository Structure
 
@@ -22,17 +23,7 @@ Both AWS and GCP folders include `foundations` subdirectory that hosts resources
 
 # AWS (not EKS)
 
-## Prerequisites
-
-You needs access to AWS account with sufficient permissions to create a role for kOps, create cluster resources, upload to S3 bucket.
-AWS access needs to be configured and bucket name stored in `STATE_STORE_BUCKET_NAME` env var.
-
-* kOps
-* jsonnet
-* Makefile
-* AWS CLI
-
-Please check out this [doc](docs/setup.md) configure the setup.
+Tech: kOps, jsonnet, Makefile, aws cli
 
 ## Deploy
 
@@ -50,6 +41,8 @@ make delete-cluster-yes
 
 
 # AWS (EKS)
+
+tech: `eksctl`, aws cli, cloudformation
 
 run script: [./aws/create-eks-with-eksctl.sh](./aws/create-eks-with-eksctl.sh)
 
