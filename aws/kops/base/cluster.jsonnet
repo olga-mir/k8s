@@ -64,8 +64,11 @@ local ssh_ip_cidr = std.extVar('ssh_ip_cidr');
     "masterPublicName": settings.clusterName,
     "networkCIDR": "172.20.0.0/16",
     "networking": {
-      "calico": {
-        "majorVersion": "v3"
+      "cilium": {
+        "tunnel": "vxlan"
+      },
+      "kubeproxy": {
+        "enabled": false
       }
     },
     "nonMasqueradeCIDR": "100.64.0.0/10",
@@ -85,8 +88,6 @@ local ssh_ip_cidr = std.extVar('ssh_ip_cidr');
       "dns": {
         "type": "Public"
       },
-      "masters": "public",
-      "nodes": "public"
     }
   }
 }

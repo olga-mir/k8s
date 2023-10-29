@@ -31,7 +31,7 @@ delete-cluster-yes:
 	rm -f $(NODES_IPS_FILE)
 	rm -f $(KOPS_CLUSTER_CONFIG_FILE)
 	kops delete cluster --name $(KOPS_CLUSTER_NAME) --yes
-
+	aws s3 rm $(KOPS_STATE_STORE)/$(KOPS_CLUSTER_NAME) --recursive
 
 # kops will try to validate a cluster pointed to by kubectl current config
 # this is undesirable when there are clusters in kubeconfig that are not managed by kops
@@ -39,7 +39,9 @@ delete-cluster-yes:
 # this can happen when current-context doesn't exist
 .PHONY: init-cluster
 init-cluster: $(KOPS_CLUSTER_CONFIG_FILE)
-	-kubectx -d $(shell kubectx -c)
+	-kubectl --kubeconfig=~/.kube/config config delete-user $(KOPS_CLUSTER_NAME)
+	-kubectl --kubeconfig=~/.kube/config config delete-cluster $(KOPS_CLUSTER_NAME)
+	-kubectl --kubeconfig=~/.kube/config config delete-context $(KOPS_CLUSTER_NAME)
 	kops create -f $(KOPS_CLUSTER_CONFIG_FILE)
 
 
