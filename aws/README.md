@@ -25,7 +25,9 @@ export WORKER_NODES_IMAGE=
 ```
 
 `KOPS_STATE_STORE` and images will be ommitted later, but they are required for now.
+
 `KOPS_CLUSTER_NAME` must be of form <NAME>.k8s.local, it is a variable which is used by kOps. This project doesn't rely on this variable and provides `name` explicitely. Using `KOPS_CLUSTER_NAME` to differentiate from other cluster deployments.
+
 Other "reserved" env variables can be found in the [kops hack folder](https://github.com/kubernetes/kops/blob/b9c89c42a56318170a34f7986b4bf60a49a6cf4f/hack/update-expected.sh#L31)
 
 source the env file:
@@ -42,6 +44,7 @@ $ envsubst < kops/overlays/template.libsonnet > kops/overlays/dev-cluster.libson
 ## Obtaining images
 
 For more info check out kops documentation: https://github.com/kubernetes/kops/blob/master/docs/operations/images.md
+
 Below is the command to find latest Amazon Linux 2023, which is at the moment experimental in kops.
 
 ```

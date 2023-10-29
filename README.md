@@ -48,7 +48,13 @@ Cleanup:
 make delete-cluster-yes
 ```
 
-# GCP
+
+# AWS (EKS)
+
+run script: [./aws/create-eks-with-eksctl.sh](./aws/create-eks-with-eksctl.sh)
+
+
+# GCP (GKE)
 
 ## Prerequisites
 
