@@ -18,7 +18,8 @@ subnet_id_2=$(aws cloudformation describe-stack-resources --stack-name $vpc_stac
 az_1=$(aws ec2 describe-subnets --subnet-ids $subnet_id_1 --query 'Subnets[*].AvailabilityZone' --output text)
 az_2=$(aws ec2 describe-subnets --subnet-ids $subnet_id_2 --query 'Subnets[*].AvailabilityZone' --output text)
 
-cat >$az_1.yaml <<EOF
+cat > eni_resources.yaml <<EOF
+---
 apiVersion: crd.k8s.amazonaws.com/v1alpha1
 kind: ENIConfig
 metadata:
@@ -27,9 +28,7 @@ spec:
   securityGroups:
     - $cluster_security_group_id
   subnet: $new_subnet_id_1
-EOF
-
-cat >$az_2.yaml <<EOF
+---
 apiVersion: crd.k8s.amazonaws.com/v1alpha1
 kind: ENIConfig
 metadata:
@@ -41,11 +40,11 @@ spec:
 EOF
 
 
-kubectl apply -f $az_1.yaml
-kubectl apply -f $az_2.yaml
+kubectl apply -f eni_resources.yaml
 
 kubectl get ENIConfigs
 
+kubectl set env daemonset aws-node -n kube-system ENI_CONFIG_LABEL_DEF=topology.kubernetes.io/zone
 
 cat <<EOF > new_ng.yaml
 apiVersion: eksctl.io/v1alpha5

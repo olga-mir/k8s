@@ -21,6 +21,7 @@ new_vpc_cidr="100.64.0.0/20"
 new_cidr_1="100.64.1.0/24"
 new_cidr_2="100.64.2.0/24"
 
+# This stack provisions NATs, make sure to delete it
 aws cloudformation create-stack --stack-name $vpc_stack \
   --template-url $vpc_cf_template_url \
   --parameters ParameterKey=VpcBlock,ParameterValue=$vpc_cidr \
@@ -47,32 +48,15 @@ public_subnet_id_2=$(aws cloudformation describe-stack-resources --stack-name $v
 az_1=$(aws ec2 describe-subnets --subnet-ids $subnet_id_1 --query 'Subnets[*].AvailabilityZone' --output text)
 az_2=$(aws ec2 describe-subnets --subnet-ids $subnet_id_2 --query 'Subnets[*].AvailabilityZone' --output text)
 
-aws ec2 describe-subnets --filters "Name=vpc-id,Values=$vpc_id" \
-    --query 'Subnets[*].{SubnetId: SubnetId,AvailabilityZone: AvailabilityZone,CidrBlock: CidrBlock}' \
-    --output table
-
-aws ec2 describe-vpcs --vpc-ids $vpc_id --query 'Vpcs[*].CidrBlockAssociationSet[*].{CIDRBlock: CidrBlock, State: CidrBlockState.State}' --out table
-
 echo "Associating new CIDR"
 aws ec2 associate-vpc-cidr-block --vpc-id $vpc_id --cidr-block $new_vpc_cidr
 sleep 60
 
-aws ec2 describe-vpcs --vpc-ids $vpc_id --query 'Vpcs[*].CidrBlockAssociationSet[*].{CIDRBlock: CidrBlock, State: CidrBlockState.State}' --out table
-
-
-new_subnet_id_1=$(aws ec2 create-subnet --vpc-id $vpc_id --availability-zone $az_1 --cidr-block $new_cidr_1 \
-    --tag-specifications "ResourceType=subnet,Tags=[{Key=Name,Value=${vpc_stack}-PrivateSubnet01},{Key=kubernetes.io/role/internal-elb,Value=1}]" \
-    --query Subnet.SubnetId --output text)
-new_subnet_id_2=$(aws ec2 create-subnet --vpc-id $vpc_id --availability-zone $az_2 --cidr-block $new_cidr_2 \
-    --tag-specifications "ResourceType=subnet,Tags=[{Key=Name,Value=${vpc_stack}-PrivateSubnet02},{Key=kubernetes.io/role/internal-elb,Value=1}]" \
-    --query Subnet.SubnetId --output text)
-
 aws ec2 describe-subnets --filters "Name=vpc-id,Values=$vpc_id" \
     --query 'Subnets[*].{SubnetId: SubnetId,AvailabilityZone: AvailabilityZone,CidrBlock: CidrBlock}' \
     --output table
 
 aws ec2 describe-vpcs --vpc-ids $vpc_id --query 'Vpcs[*].CidrBlockAssociationSet[*].{CIDRBlock: CidrBlock, State: CidrBlockState.State}' --out table
-
 
 cat <<EOF > eks-config.yaml
 apiVersion: eksctl.io/v1alpha5
@@ -86,7 +70,7 @@ vpc:
   id: $vpc_id
   subnets:
     private:
-     $az_1:
+      $az_1:
         id: $subnet_id_1
       $az_2:
         id: $subnet_id_2
@@ -98,7 +82,7 @@ vpc:
         id: $public_subnet_id_2
 
 managedNodeGroups:
-  - name: managed-ng-public
+  - name: managed-ng-orig
     availabilityZones: [$az_1, $az_2]
     # securityGroups:
     #  attachIDs: ["sg-1", "sg-2"]
@@ -121,4 +105,15 @@ EOF
 
 eksctl create cluster -f ./eks-config.yaml
 
-aws eks wait cluster-active --name $cluster_name
+new_subnet_id_1=$(aws ec2 create-subnet --vpc-id $vpc_id --availability-zone $az_1 --cidr-block $new_cidr_1 \
+    --tag-specifications "ResourceType=subnet,Tags=[{Key=Name,Value=${vpc_stack}-PrivateSubnet01},{Key=kubernetes.io/role/internal-elb,Value=1},{Key=provisioning,Value=manual}]" \
+    --query Subnet.SubnetId --output text)
+new_subnet_id_2=$(aws ec2 create-subnet --vpc-id $vpc_id --availability-zone $az_2 --cidr-block $new_cidr_2 \
+    --tag-specifications "ResourceType=subnet,Tags=[{Key=Name,Value=${vpc_stack}-PrivateSubnet02},{Key=kubernetes.io/role/internal-elb,Value=1},{Key=provisioning,Value=manual}]" \
+    --query Subnet.SubnetId --output text)
+
+aws ec2 describe-subnets --filters "Name=vpc-id,Values=$vpc_id" \
+    --query 'Subnets[*].{SubnetId: SubnetId,AvailabilityZone: AvailabilityZone,CidrBlock: CidrBlock}' \
+    --output table
+
+aws ec2 describe-vpcs --vpc-ids $vpc_id --query 'Vpcs[*].CidrBlockAssociationSet[*].{CIDRBlock: CidrBlock, State: CidrBlockState.State}' --out table
