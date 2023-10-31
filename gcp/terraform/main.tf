@@ -24,7 +24,7 @@ module "gke" {
   ip_range_pods              = "pod-range"
   ip_range_services          = "svc-range"
   horizontal_pod_autoscaling = true
-  default_max_pods_per_node  = 64
+  default_max_pods_per_node  = 16
   datapath_provider          = "ADVANCED_DATAPATH"
   kubernetes_version         = "1.26.7"
   configure_ip_masq          = false
