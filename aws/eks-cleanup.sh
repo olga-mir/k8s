@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eoux pipefail
+set -oux pipefail
 
 cluster_name=eks-test-network
 vpc_stack=eks-test-vpc-stack
