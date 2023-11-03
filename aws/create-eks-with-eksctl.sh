@@ -5,10 +5,8 @@ set -eoux pipefail
 # https://docs.aws.amazon.com/eks/latest/userguide/cni-custom-network.html
 # https://github.com/eksctl-io/eksctl/blob/main/examples/15-managed-nodes.yaml
 
-cluster_name=eks-test-network
-account_id=$(aws sts get-caller-identity --query Account --output text)
-
-vpc_stack=eks-test-vpc-stack
+cluster_name=eks-demo-ip
+vpc_stack=eks-demo-ip-vpc-stack
 vpc_cf_template_url="https://s3.us-west-2.amazonaws.com/amazon-eks/cloudformation/2020-10-29/amazon-eks-vpc-private-subnets.yaml"
 
 vpc_cidr="10.0.0.0/16"
@@ -69,16 +67,17 @@ vpc:
 
 managedNodeGroups:
   - name: managed-ng-orig
-    availabilityZones: [$az_1, $az_2]
-    # securityGroups:
-    #  attachIDs: ["sg-1", "sg-2"]
-    # ssh:
-    #   allow: true
-    #   publicKeyPath: ~/.ssh/ec2_id_rsa.pub
-    #   sourceSecurityGroupIds: ["sg-00241fbb12c607007"]
     labels: {role: worker}
+    availabilityZones: [$az_1, $az_2]
+    minSize: 2
+    maxSize: 6
+    volumeSize: 40
     instanceTypes: ["t3.small", "t3.medium"]
     spot: true
+
+    updateConfig:
+      maxUnavailable: 1
+
     iam:
       withAddonPolicies:
         autoScaler: true
@@ -94,6 +93,10 @@ EOF
 
 eksctl create cluster -f ./eks-config.yaml
 
-# TODO - install cluster autoscaler
-# https://eksctl.io/usage/autoscaling/
-# https://raw.githubusercontent.com/kubernetes/autoscaler/master/cluster-autoscaler/cloudprovider/aws/examples/cluster-autoscaler-multi-asg.yaml
+
+# Install Cluster Autoscaler
+helm repo add autoscaler https://kubernetes.github.io/autoscaler
+
+helm install cluster-autoscaler autoscaler/cluster-autoscaler -n kube-system \
+    --set autoDiscovery.clusterName=$cluster_name \
+    --set awsRegion=$AWS_REGION
