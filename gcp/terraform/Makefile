@@ -7,7 +7,7 @@ TF_PLAN_FILE=$(ROOT_DIR)/tfplan
 ####
 
 .PHONY: create-vpc
-create-vpc:
+create-vpc: tf-init
 	$(MAKE) -C $(ROOT_DIR)/foundation tf-apply
 
 
