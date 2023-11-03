@@ -70,10 +70,10 @@ make cluster.yaml
 
 Create cluster (it will generate cluster config if required) and export kubeconfig in default location:
 ```
-make create-cluster
+make kops-create-cluster
 ```
 
 Cleanup:
 ```
-make delete-cluster-yes
+make kops-delete-cluster-yes
 ```
