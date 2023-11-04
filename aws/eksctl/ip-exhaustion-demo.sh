@@ -4,15 +4,17 @@ set -eoux pipefail
 
 # https://docs.aws.amazon.com/eks/latest/userguide/cni-custom-network.html
 
-cluster_name=eks-test-network
-vpc_stack=eks-test-vpc-stack
+cluster_name=eks-demo-ip
+vpc_stack=eks-demo-ip-vpc-stack
 
 new_vpc_cidr="100.64.0.0/20"
 new_cidr_1="100.64.1.0/24"
 new_cidr_2="100.64.2.0/24"
 
 kubectl set env daemonset aws-node -n kube-system AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG=true
+
 cluster_security_group_id=$(aws eks describe-cluster --name $cluster_name --query cluster.resourcesVpcConfig.clusterSecurityGroupId --output text)
+vpc_id=$(aws cloudformation describe-stacks --stack-name $vpc_stack --query 'Stacks[0].Outputs[?OutputKey==`VpcId`].OutputValue' --output=text)
 
 subnet_id_1=$(aws cloudformation describe-stack-resources --stack-name $vpc_stack \
     --query "StackResources[?LogicalResourceId=='PrivateSubnet01'].PhysicalResourceId" --output text)
@@ -32,12 +34,6 @@ new_subnet_id_1=$(aws ec2 create-subnet --vpc-id $vpc_id --availability-zone $az
 new_subnet_id_2=$(aws ec2 create-subnet --vpc-id $vpc_id --availability-zone $az_2 --cidr-block $new_cidr_2 \
     --tag-specifications "ResourceType=subnet,Tags=[{Key=Name,Value=${vpc_stack}-PrivateSubnet02},{Key=kubernetes.io/role/internal-elb,Value=1},{Key=provisioning,Value=manual}]" \
     --query Subnet.SubnetId --output text)
-
-aws ec2 describe-subnets --filters "Name=vpc-id,Values=$vpc_id" \
-    --query 'Subnets[*].{SubnetId: SubnetId,AvailabilityZone: AvailabilityZone,CidrBlock: CidrBlock}' \
-    --output table
-
-aws ec2 describe-vpcs --vpc-ids $vpc_id --query 'Vpcs[*].CidrBlockAssociationSet[*].{CIDRBlock: CidrBlock, State: CidrBlockState.State}' --out table
 
 aws ec2 describe-subnets --filters "Name=vpc-id,Values=$vpc_id" \
     --query 'Subnets[*].{SubnetId: SubnetId,AvailabilityZone: AvailabilityZone,CidrBlock: CidrBlock}' \
@@ -86,7 +82,7 @@ managedNodeGroups:
     availabilityZones: [$az_1, $az_2]
     labels: {role: worker}
     minSize: 1
-    maxSize: 6
+    maxSize: 3
     volumeSize: 40
     instanceTypes: ["t3.small", "t3.medium"]
     spot: true

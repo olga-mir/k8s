@@ -10,10 +10,10 @@ vpc_stack=eks-demo-ip-vpc-stack
 vpc_cf_template_url="https://s3.us-west-2.amazonaws.com/amazon-eks/cloudformation/2020-10-29/amazon-eks-vpc-private-subnets.yaml"
 
 vpc_cidr="10.0.0.0/16"
-private01_cidr="10.0.0.0/27"
-private02_cidr="10.0.16.0/27"
-public01_cidr="10.0.128.0/27"
-public02_cidr="10.0.144.0/27"
+private01_cidr="10.0.186.0/27"
+private02_cidr="10.0.192.0/27"
+public01_cidr="10.0.208.0/27"
+public02_cidr="10.0.224.0/27"
 
 # This stack provisions NATs, make sure to delete it
 aws cloudformation create-stack --stack-name $vpc_stack \
