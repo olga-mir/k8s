@@ -1,57 +1,69 @@
 # k8s
 
-This repository contains scripts and manifests to create a kubernetes cluster on **AWS with kOps** or **GKE with terraform**.
+This repository contains scripts, manifests and IaC to create k8s clusters on AWS and GCP.
 
-The clusters are intended for learning and exploration. They are meant to be short-lived and cleanup Make targets are availble to easily dispose of them.
+The clusters are intended for learning and exploration. They are meant to be short-lived, cleanup Make targets and scripts are provided.
 
-AWS cluster is deployed to the default VPC into public subnets. SSH and API server access is allowed only from the same IP address that it was created from, therefore it is possible to get locked out if IP changes and will require restore via web console.
+SSH and API server access is allowed only from the same IP address that it was created from, therefore it is possible to get locked out if IP changes and will require restore via web console.
 
-These clusters are not hardened for security, primarily for lack of time and the fact that they are only up for short periods of time.
+These clusters are not hardened for security, primarily for lack of time and the fact that they are only up for short periods of time. Nodes and API server are exposed with public IP.
 
 # Supported Versions
 
-* AWS: tested with kubernetes 1.28.3 and kOps 1.28.0
-* GCP: tested with GKE 1.23.13
+* AWS (kOps): k8s - 1.28.3; kOps - 1.28.0
+* AWS (EKS): k8s - 1.27, eksctl - 0.164.0
+* GCP (GKE): k8s - 1.23.13
 
 # Repository Structure
 
-The clusters defined in this repo are standalone and it is easier to treat them as such by completely separating the code into unrelated folders. For cluster fleet demo check the last section of this README.
-It is intended to work from within the respective folders, not the repo root.
+```
+.
+├── LICENSE
+├── README.md
+├── aws
+│   ├── Makefile
+│   ├── Makefile.preflight
+│   ├── README.md
+│   ├── eksctl      // EKS cluster with `eksctl`
+│   ├── foundation  // network and IAM
+│   └── kops        // AWS non-EKS cluster
+├── docs
+│   └── setup.md    // Tools setup and general info
+├── gcp
+│   ├── README.md
+│   ├── crossplane          // TODO
+│   ├── gcloud              // Create GKE cluster with `gcloud`
+│   ├── multi-network-pods  // https://cloud.google.com/kubernetes-engine/docs/how-to/setup-multinetwork-support-for-pods
+│   └── terraform           // Create GKE cluster with terraform
+└── scripts         // Mostly scripts to install tools on nodes for debug, low level Linux digging, performance engineering and eBPF
+```
 
-Both AWS and GCP folders include `foundations` subdirectory that hosts resources like VPC, IAM, Firewall definitions, etc. These resources do not need to be recreated each time so they are managed separately.
+Both GCP and AWS folders contain static resources (VPC, IAM, Buckets) that usually don't require cleanup because they don't incur any cost.
+Beware that VPC stacks may include NATs or other resources that do incur cost and therefore have to be cleaned after each session
 
-# AWS (not EKS)
-
-## Prerequisites
-
-You needs access to AWS account with sufficient permissions to create a role for kOps, create cluster resources, upload to S3 bucket.
-AWS access needs to be configured and bucket name stored in `STATE_STORE_BUCKET_NAME` env var.
-
-* kOps
-* jsonnet
-* Makefile
-* AWS CLI
-
-Please check out this [doc](docs/setup.md) configure the setup.
-
-## Deploy
+# AWS
 
 Detailed instructions provided in [./aws/README.md](./aws/README.md)
 
-Create cluster and export kubeconfig in default location:
+## kOps
+
+Tech: kOps, jsonnet, Makefile, aws cli
+
 ```
-make create-cluster
+make kops-create-cluster
 ```
 
 Cleanup:
 ```
-make delete-cluster-yes
+make kops-delete-cluster-yes
 ```
 
+## EKS (with `eksctl`)
 
-# AWS (EKS)
+tech: `eksctl`, aws cli, cloudformation
 
-run script: [./aws/create-eks-with-eksctl.sh](./aws/create-eks-with-eksctl.sh)
+deploy: [./aws/eksctl/create.sh](./aws/eksctl/create.sh)
+cleanup: [./aws/eksctl/cleanup.sh](./aws/eksctl/cleanup.sh)
 
 
 # GCP (GKE)

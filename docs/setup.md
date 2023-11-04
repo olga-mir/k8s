@@ -35,9 +35,9 @@ brew install jsonnet
 
 If you haven't already
 
-# Once off setup
+# Static Resources
 
-S3 bucket and IAM settings do not need to be destroyed each time.
+Resources like buckets, IAM and in some cases VPC stacks can be deployed only once and don't require re-deployment each time a cluster is created.
 
 ```sh
 make kops-iam
@@ -49,25 +49,13 @@ Create bucket for kops to store the state. The bucket content is emptied on clus
 make create-cluster-store-bucket
 ```
 
-# Create cluster
-
-Create cluster hands-off:
-
-```sh
-make create-cluster
-```
-
-This will create state, upload it to s3, instruct kOps to create the cluster and download cluster-admin auth credentials.
-Note that if there is existing kubeconfig, then it will be merged with settings for the new cluster
-
-# Delete cluster
-```sh
-make delete-cluster-yes
-```
-
 ### Notes
+
 To create cluster config:
-`kops create cluster --zones ap-southeast-2a --container-runtime=containerd --networking=calico --dry-run -oyaml`
-then export from existing cluster:
-`kops get cluster --name $KOPS_CLUSTER_NAME -o yaml > cluster.yaml`
+
+`kops create cluster --name=clustername.k8s.local --zones $az --container-runtime=containerd --networking=cilium --dry-run -oyaml`
+
+or export from existing cluster:
+`kops get cluster --name=clustername.k8s.local -o yaml > cluster.yaml`
+
 docs: https://kops.sigs.k8s.io/manifests_and_customizing_via_api/

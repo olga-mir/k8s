@@ -1,5 +1,5 @@
 # auto-generated kops cluster config file and contains non-public data
-aws/cluster.yaml
+aws/kops/cluster.yaml
 
 # inputs to kops cluster config and contains non-public data
 aws/kops/overlays/dev-cluster.libsonnet
