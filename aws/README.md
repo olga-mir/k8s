@@ -1,4 +1,6 @@
-# Prerequisites
+# kOps
+
+## Prerequisites
 
 You needs access to AWS account with sufficient permissions to create a role for kOps, create cluster resources, upload to S3 bucket.
 AWS access needs to be configured and bucket name stored in `STATE_STORE_BUCKET_NAME` env var.
@@ -10,7 +12,7 @@ AWS access needs to be configured and bucket name stored in `STATE_STORE_BUCKET_
 
 Please check out [docs](../docs/setup.md) to configure the setup.
 
-# Setup env
+## Setup env
 
 Create environment file with the following variables and providing your values:
 
@@ -59,7 +61,7 @@ This setup is tested with latest image:
 |  2023-10-23T19:05:45.000Z |  al2023-ami-2023.2.20231018.2-kernel-6.1-x86_64  |  ami-09b402d0a0d6b112b |
 ```
 
-# Deploy
+## Deploy
 
 Cluster config is generated using jsonnet and then passed as one `cluster.yaml` file to kOps to create the cluster.
 
@@ -76,4 +78,23 @@ make kops-create-cluster
 Cleanup:
 ```
 make kops-delete-cluster-yes
+```
+
+# EKS
+
+## Prerequisites
+
+* `eksctl`
+* aws cli
+
+## Deploy
+
+Create VPC and cluster:
+```
+./eksctl/create.sh
+```
+
+Cleanup all resources:
+```
+./eksctl/cleanup.sh
 ```
