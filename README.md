@@ -1,12 +1,10 @@
 # k8s
 
-This repository contains scripts, manifests and IaC to create k8s clusters on AWS and GCP.
+This repository contains scripts, manifests and IaC to create standalone k8s clusters on AWS and GCP. For Cluster Mesh and Cluster API clusters check out [olga-mir/k8s-multi-cluster](https://github.com/olga-mir/k8s-multi-cluster)
 
-The clusters are intended for learning and exploration. They are meant to be short-lived, cleanup Make targets and scripts are provided.
+The clusters are intended for learning and exploration.
 
-SSH and API server access is allowed only from the same IP address that it was created from, therefore it is possible to get locked out if IP changes and will require restore via web console.
-
-These clusters are not hardened for security, primarily for lack of time and the fact that they are only up for short periods of time. Nodes and API server are exposed with public IP.
+These clusters are not hardened for security, primarily for lack of time and the fact that they are short-lived, bootstrapped in learning projects with hard limits. Nodes and API server are exposed with public IP. But SSH and API server access is allowed only from the same IP address that it was created from
 
 # Supported Versions
 
