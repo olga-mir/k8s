@@ -20,7 +20,7 @@ $ envsubst < template-tfvars > dev.tfvars
 
 ## Project and VPC
 
-Terraform code for one time setup is in `$REPO_ROOT/gcp/foundations` folder. At this time only network related code is available.
+Terraform code for one time setup is in `$REPO_ROOT/gcp/terraform/foundations` folder. At this time only network related code is available.
 ```
 make create-vpc
 ```
@@ -35,18 +35,33 @@ Required APIs:
 "cloudprofiler.googleapis.com",
 ```
 
+## GKE Cluster
+
+Create a cluster:
+```
+make create-gke
+```
+
+Delete the cluster:
+```
+make cleanup
+```
+
 ## Toolbox and BPF tools
 
-Like admin container on AWS BottleRocket, GCP COS has `toolbox` many even basic things are missing there.
+Using `toolbox` container on the VM:
 
 [source repo](https://cos.googlesource.com/cos/tools)
+
 [google guide](https://cloud.google.com/container-optimized-os/docs/how-to/toolbox)
 
-Install BPF tools on GKE COS: [./install-bpf-tools.sh](./install-bpf-tools.sh)
+Install BPF tools on GKE COS: [scripts/install-bpf-tools.sh](../scripts/install-bpf-tools.sh)
 
 
 ## Debug IAP connections
 
+```
 gcloud compute ssh <NODE> --project=<PROJ> --zone=<ZONE> --troubleshoot
 gcloud compute ssh <NODE> --project=<PROJ> --zone=<ZONE> --troubleshoot --tunnel-through-iap
+```
 

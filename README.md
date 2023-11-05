@@ -66,15 +66,9 @@ cleanup: [./aws/eksctl/cleanup.sh](./aws/eksctl/cleanup.sh)
 
 # GCP (GKE)
 
-## Prerequisites
-
-* glcoud
-* terraform
-* Makefile
+Tools: `gcloud`, terraform, Makefile
 
 ## Deploy
-
-:warning: The following commands are meant to be run from `./gcp` directory.
 
 Currently not all variables have been abstracted away and the tf code has hardcoded values for my VPC, but it does create a valid GKE cluster when these values are set correctly.
 

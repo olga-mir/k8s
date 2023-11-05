@@ -8,8 +8,9 @@ On top of that k8s itself comes with extensive array of configuration options, a
 
 The clusters for this demore were provisioned using this repo:
 
-gke: https://github.com/olga-mir/k8s/tree/main/gcp/terraform
-eks: https://github.com/olga-mir/k8s/tree/main/aws/eksctl
+GKE: https://github.com/olga-mir/k8s/tree/main/gcp/terraform
+
+EKS: https://github.com/olga-mir/k8s/tree/main/aws/eksctl
 
 # GKE 
 
