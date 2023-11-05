@@ -60,8 +60,9 @@ make kops-delete-cluster-yes
 
 tech: `eksctl`, aws cli, cloudformation
 
-deploy: [./aws/eksctl/create.sh](./aws/eksctl/create.sh)
-cleanup: [./aws/eksctl/cleanup.sh](./aws/eksctl/cleanup.sh)
+Deploy: [./aws/eksctl/create.sh](./aws/eksctl/create.sh)
+
+Cleanup: [./aws/eksctl/cleanup.sh](./aws/eksctl/cleanup.sh)
 
 
 # GCP (GKE)
