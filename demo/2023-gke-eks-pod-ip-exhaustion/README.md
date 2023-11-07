@@ -13,12 +13,6 @@ GKE: [gcp/terraform](https://github.com/olga-mir/k8s/tree/v0.0.2/gcp/terraform)
 EKS: [aws/eksctl](https://github.com/olga-mir/k8s/tree/v0.0.2/aws/eksctl)
 
 
-# A word about IPs
-
-What's the big deal with IPs? k8s networking model requries that every pod has its own IP and that any pod can communicate with any other pod in the cluster. Kubernetes itself doesn't implement networking, nor it prescribes how to implement it. In early days CNIs implemented overlay network model, often referred as tunnel. In this approach, packets traveling between pods on different nodes were encapsulated, incurring bandwidth and processing overhead (some of these concerns have been mitigated in modern kernels, but it's a separate topic). In this model, pod IPs are opaque beyond the cluster boundaries and have constraints.
-
-With the rise of managed k8s, cloud providers implemented solutions that integrate directly with underlying VPC and pod IPs become directly routable on the VPC, making them first-class citizen. GKE calls it "integrated" or "flat" network model. This makes IPs expensive commodity because they must avoid collisions with all other services running in the VPC and connected networks.
-
 # GKE
 
 <details>
@@ -31,6 +25,8 @@ GCP subnet consists of Primary IP range and optionally Secondary IP ranges. In G
 One secondary range can be allocated to more than one nodepool and each nodepool can have only one secondary range associated with it.
 
 In the basic scenario there is one secondary range on the subnet which is used by the cluster as default pod IP range:
+
+![simple subnet](./images/ip-demo-gke-basic-subnet.png)
 
 
 </details>
