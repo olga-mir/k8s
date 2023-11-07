@@ -26,7 +26,7 @@ One secondary range can be allocated to more than one nodepool and each nodepool
 
 In the basic scenario there is one secondary range on the subnet which is used by the cluster as default pod IP range:
 
-![simple subnet](./images/ip-demo-gke-basic-subnet.png)
+<img src="./images/ip-demo-gke-basic-subnet.png" width="200">
 
 
 </details>
