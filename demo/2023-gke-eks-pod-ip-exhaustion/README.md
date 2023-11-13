@@ -83,9 +83,9 @@ Events:
   Normal   NotTriggerScaleUp  42s                 cluster-autoscaler  pod didn't trigger scale-up: 1 in backoff after failed scale-up
 ```
 
-Note **Node scale up ...  associated with this pod failed: IP space exhausted** Even though it doesn't spell out if it is Node IP or Pod IP exhausted, in this case it is Pod IP - in this demo cluster the Primary range is /16 which is pretty big and only 2 nodes. It is indeed pod IP space exhasted here.
+Note **Node scale up ...  associated with this pod failed: IP space exhausted** Even though it doesn't spell out if it is Node IP or Pod IP exhausted, in this case it is Pod IP - in this demo cluster the Primary range is /16 which is pretty big and it has only 2 nodes. In this case it is indeed failed due to Pod IP exhaustion.
 
-Cluster Autoscaler leaves a little note on the pod for itself.
+Cluster Autoscaler leaves a little note on the pod for itself:
 ```
 % k get po alpine-curl-648f8f669c-wltzt -o yaml | yq '.metadata.annotations'
 cloud.google.com/cluster_autoscaler_unhelpable_since: 2023-11-03T07:07:42+0000
