@@ -122,9 +122,137 @@ Will result in:
 <details>
   <summary>Pod IP Exhaustion in EKS</summary>
 
-  TODO
+## Network and Cluster Setup
 
-  https://github.com/olga-mir/k8s/pull/5
+Looking at the VM with the help of ipamd provided tool:
+```
+[root@ip-10-0-208-27 ~]# curl -s http://localhost:61679/v1/enis | python -m json.tool | jq .
+{
+  "AssignedIPs": 4,
+  "ENIs": {
+    "eni-00259388be69d244d": {
+      "AvailableIPv4Cidrs": {
+        "10.0.208.24/32": {
+          "AddressFamily": "",
+          "Cidr": {
+            "IP": "10.0.208.24",
+            "Mask": "/////w=="
+          },
+          "IPAddresses": {},
+          "IsPrefix": false
+        },
+        "10.0.208.5/32": {
+          "AddressFamily": "",
+          "Cidr": {
+            "IP": "10.0.208.5",
+            "Mask": "/////w=="
+          },
+          "IPAddresses": {
+            "10.0.208.5": {
+              "Address": "10.0.208.5",
+              "AssignedTime": "2023-11-04T00:33:02.972941607Z",
+              "IPAMKey": {
+                "containerID": "abeb1b394e1806b060ac75a8f5dd867b484563c510e2a462bec122923a3998a3",
+                "ifName": "eth0",
+                "networkName": "aws-cni"
+              },
+              "IPAMMetadata": {
+                "k8sPodName": "alpine-curl-648f8f669c-vjrf4",
+                "k8sPodNamespace": "test"
+              },
+              "UnassignedTime": "0001-01-01T00:00:00Z"
+            }
+          },
+          "IsPrefix": false
+        },
+```
+
+There is a number of ENIs attached to the instance, and each ENI has a number of IPs, some of these are assigned for the pods and some are available for future pods that will be created on the node.
+
+## IPAM AWS Service page
+
+<img src="./images/aws-ipam-service-100.png" width="400">
+
+
+## Mitigation
+
+Again we will mitigate by adding more Pod IPs to the cluster, in AWS this method is called **Custom Networking for Pods** and is described in [3]
+
+Full mitigation script: [aws/eksctl/ip-exhaustion-demo.sh](https://github.com/olga-mir/k8s/blob/main/aws/eksctl/ip-exhaustion-demo.sh)
+
+Note that with `eksctl` there is no need to manually create IAM resources like in the official AWS tutorial
+
+Network after adding new range and subnets:
+
+```
++ aws ec2 describe-subnets --filters Name=vpc-id,Values=$vpc_id --query 'Subnets[*].{SubnetId: SubnetId,AvailabilityZone: AvailabilityZone,CidrBlock: CidrBlock}' --output table
+-------------------------------------------------------------------
+|                         DescribeSubnets                         |
++------------------+-----------------+----------------------------+
+| AvailabilityZone |    CidrBlock    |         SubnetId           |
++------------------+-----------------+----------------------------+
+|  ap-southeast-2a |  10.0.208.0/27  |  subnet-0cd55c38980375d58  |
+|  ap-southeast-2a |  100.64.1.0/24  |  subnet-04a932dfaf2e3c8f3  |
+|  ap-southeast-2a |  10.0.186.0/27  |  subnet-0bae4d2bf017995b8  |
+|  ap-southeast-2b |  100.64.2.0/24  |  subnet-0aca140a7597f7cb0  |
+|  ap-southeast-2b |  10.0.192.0/27  |  subnet-06d8153845fa5e9cb  |
+|  ap-southeast-2b |  10.0.224.0/27  |  subnet-0a0bce6a1c1f38c54  |
++------------------+-----------------+----------------------------+
++ aws ec2 describe-vpcs --vpc-ids $vpc_id --query 'Vpcs[*].CidrBlockAssociationSet[*].{CIDRBlock: CidrBlock, State: CidrBlockState.State}' --out table
+---------------------------------
+|         DescribeVpcs          |
++----------------+--------------+
+|    CIDRBlock   |    State     |
++----------------+--------------+
+|  10.0.0.0/16   |  associated  |
+|  100.64.0.0/20 |  associated  |
++----------------+--------------+
+```
+
+
+Create a new node pool:
+
+Pods on the same node can share the IP addresses from any range:
+```
+~ % k get po -o wide | grep ip-10-0-208-27.ap-southeast-2.compute.internal
+alpine-curl-648f8f669c-fzsr5   1/1     Running   0          9m11s   100.64.1.61    ip-10-0-208-27.ap-southeast-2.compute.internal   <none>           <none>
+alpine-curl-648f8f669c-ggjdk   1/1     Running   0          9m11s   10.0.208.24    ip-10-0-208-27.ap-southeast-2.compute.internal   <none>           <none>
+alpine-curl-648f8f669c-jsq5g   1/1     Running   0          9m11s   10.0.208.8     ip-10-0-208-27.ap-southeast-2.compute.internal   <none>           <none>
+alpine-curl-648f8f669c-lntw2   1/1     Running   0          9m11s   10.0.208.7     ip-10-0-208-27.ap-southeast-2.compute.internal   <none>           <none>
+alpine-curl-648f8f669c-rrc4d   1/1     Running   0          9m11s   10.0.208.28    ip-10-0-208-27.ap-southeast-2.compute.internal   <none>           <none>
+alpine-curl-648f8f669c-vjrf4   1/1     Running   0          116m    10.0.208.5     ip-10-0-208-27.ap-southeast-2.compute.internal   <none>           <none>
+alpine-curl-648f8f669c-x6mlp   1/1     Running   0          8m50s   100.64.1.12    ip-10-0-208-27.ap-southeast-2.compute.internal   <none>           <none>
+```
+
+And this is how it looks on the VM:
+
+```
+sh-4.2$ hostname
+ip-10-0-208-27.ap-southeast-2.compute.internal
+sh-4.2$
+sh-4.2$ curl -s http://localhost:61679/v1/enis | python -m json.tool | jq '.ENIs|keys'
+[
+  "eni-00259388be69d244d",
+  "eni-01134cfde03ff387e",
+  "eni-07ae7b7cd90520202"
+]
+sh-4.2$ curl -s http://localhost:61679/v1/enis | python -m json.tool | jq '[.ENIs["eni-00259388be69d244d"].AvailableIPv4Cidrs[] | select (.IPAddresses != {}) | .Cidr.IP]'
+[
+  "10.0.208.24",
+  "10.0.208.5",
+  "10.0.208.8"
+]
+sh-4.2$ curl -s http://localhost:61679/v1/enis | python -m json.tool | jq '[.ENIs["eni-01134cfde03ff387e"].AvailableIPv4Cidrs[] | select (.IPAddresses != {}) | .Cidr.IP]'
+[
+  "100.64.1.12",
+  "100.64.1.61"
+]
+```
+
+After re-shuflling some pods around, IPAM service page shows that subnets are now not at capacity:
+
+<img src="./images/aws-ipam-service-resolved.png" width="400">
+
 
 </details>
 
@@ -132,3 +260,4 @@ Will result in:
 
 1 - [Kubernetes networking model](https://kubernetes.io/docs/concepts/services-networking/)
 2 - [Discontiguous multi-Pod CIDR](https://cloud.google.com/kubernetes-engine/docs/how-to/multi-pod-cidr)
+3 - [EKS Custom Networking for Pods](https://docs.aws.amazon.com/eks/latest/userguide/cni-custom-network.html)
