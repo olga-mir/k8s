@@ -99,19 +99,20 @@ As mentioned earlier we will only explore options of adding a new range to the e
 * Create a node pool with a new secondary Pod IP address range (GKE manages subnet)
 * Create a node pool using an existing secondary Pod IP address (you manage subnet)
 
+The first option, adding to the cluster, is in the end of the day still results in nodepools with only one range with only difference with the last option being that assigning ranges to nodepool is done by GKE. This is suitable for clusters with dynamic nodepool provising (NAP) but it is failry useless for clusters with pre-defined static nodepools.
 
+Example:
+```
+for i in {1..8}; do
+  max_nodes=$(( $(( 6 + $i )) * $i ))
+  gcloud container node-pools create nodepool-${i} --cluster=$cluster --max-pods-per-node=32 --enable-autoscaling --min-nodes=0 --max-nodes=$max_nodes --spot
+  gcloud container clusters resize $cluster --node-pool=nodepool-${i} --num-nodes=0 -q
+done
+```
+Will result in:
 
-```
-cloud container node-pools create new-nodepool \
-    --cluster=demo-ip \
-    --node-locations=australia-southeast1-b \
-    --location-policy=BALANCED \
-    --enable-autoscaling \
-    --total-max-nodes=10 \
-    --max-pods-per-node=32 \
-    --pod-ipv4-range=pod-range-2 \
-    --spot
-```
+<img src="./images/gke-cluster-level.png" width="500">
+
 
 </details>
 
