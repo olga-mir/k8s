@@ -8,9 +8,10 @@ Managed Kubernetes distributions rely on the computing and networking primitives
 
 The clusters for this demore were provisioned using source code in this repo:
 
-GKE: [gcp/terraform](https://github.com/olga-mir/k8s/tree/v0.0.2/gcp/terraform)
+GKE: [gcp/terraform](https://github.com/olga-mir/k8s/tree/v0.0.3/gcp/terraform)
 
-EKS: [aws/eksctl](https://github.com/olga-mir/k8s/tree/v0.0.2/aws/eksctl)
+EKS: [aws/eksctl](https://github.com/olga-mir/k8s/tree/v0.0.3/aws/eksctl)
+
 
 ## Intro
 
@@ -66,13 +67,13 @@ podIpv4CidrSize: 27
 Because pod IP CIDR is allocated per node at the time of node creation, provisioning a node can fail if there is not enough IPs:
 
 ```
-~ % k get po
+% k get po
 NAME                           READY   STATUS    RESTARTS   AGE
 alpine-curl-648f8f669c-t4d4v   1/1     Running   0          85s
 alpine-curl-648f8f669c-vmmzl   1/1     Running   0          85s
 alpine-curl-648f8f669c-wltzt   0/1     Pending   0          85s
 
-~ % k describe po alpine-curl-648f8f669c-wltzt | grep -A 15 "Events:"
+% k describe po alpine-curl-648f8f669c-wltzt | grep -A 15 "Events:"
 Events:
   Type     Reason             Age                 From                Message
   ----     ------             ----                ----                -------
@@ -86,7 +87,7 @@ Note **Node scale up ...  associated with this pod failed: IP space exhausted** 
 
 Cluster Autoscaler leaves a little note on the pod for itself.
 ```
-  ~ % k get po alpine-curl-648f8f669c-wltzt -o yaml | yq '.metadata.annotations'
+% k get po alpine-curl-648f8f669c-wltzt -o yaml | yq '.metadata.annotations'
 cloud.google.com/cluster_autoscaler_unhelpable_since: 2023-11-03T07:07:42+0000
 cloud.google.com/cluster_autoscaler_unhelpable_until: Inf
 ```
@@ -109,7 +110,7 @@ for i in {1..8}; do
   gcloud container clusters resize $cluster --node-pool=nodepool-${i} --num-nodes=0 -q
 done
 ```
-Will result in:
+Can result in something like this:
 
 <img src="./images/gke-cluster-level.png" width="500">
 
@@ -249,15 +250,16 @@ sh-4.2$ curl -s http://localhost:61679/v1/enis | python -m json.tool | jq '[.ENI
 ]
 ```
 
-After re-shuflling some pods around, IPAM service page shows that subnets are now not at capacity:
+After re-shuflling some pods around, IPAM service page shows that all subnets now have some room:
 
 <img src="./images/aws-ipam-service-resolved.png" width="400">
-
 
 </details>
 
 # References
 
 1 - [Kubernetes networking model](https://kubernetes.io/docs/concepts/services-networking/)
+
 2 - [Discontiguous multi-Pod CIDR](https://cloud.google.com/kubernetes-engine/docs/how-to/multi-pod-cidr)
+
 3 - [EKS Custom Networking for Pods](https://docs.aws.amazon.com/eks/latest/userguide/cni-custom-network.html)
