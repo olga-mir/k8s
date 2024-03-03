@@ -39,8 +39,20 @@ export HIGHPERF_SEC_RANGE=
 ## GKE with Fully Managed ASM
 
 script: [./create-with-asm.sh](./create-with-asm.sh)
+
 deploy demo app: [./deploy-asm-demo-app.sh](./deploy-asm-demo-app.sh)
 
 docuementation: https://cloud.google.com/service-mesh/docs/unified-install/install-anthos-service-mesh-command
 
 Note that to cleanup this setup it is not enough to just delete the cluster. More details in [./cleanup-gke-with-asm.sh](./cleanup-gke-with-asm.sh)
+
+## GKE DPv2 with Hubble Observability
+
+### Docs
+
+https://cloud.google.com/kubernetes-engine/docs/concepts/about-dpv2-observability
+
+https://cloud.google.com/kubernetes-engine/docs/how-to/configure-dpv2-observability
+
+
+script: [./dpv2-create-gke-with-o11y.sh](./dpv2-create-gke-with-o11y.sh)
