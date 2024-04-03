@@ -41,6 +41,8 @@ gcloud container node-pools create $NODEPOOL_NAME \
 
 gcloud container clusters get-credentials $GKE_CLUSTER_NAME --zone $ZONE  # --project $PROJECT_ID
 
+sleep 60
+
 kubectl apply -f dpv2-hubble-ui-std.yaml
 # kubectl -n gke-managed-dpv2-observability port-forward service/hubble-ui 16100:80 --address='0.0.0.0'
 

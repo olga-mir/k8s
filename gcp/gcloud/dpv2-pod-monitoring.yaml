@@ -2,6 +2,7 @@ apiVersion: monitoring.googleapis.com/v1
 kind: PodMonitoring
 metadata:
   name: hubble-metrics
+  namespace: kube-system
   labels:
     k8s-app: hubble-relay
 spec:
