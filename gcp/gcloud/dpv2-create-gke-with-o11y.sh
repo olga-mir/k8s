@@ -21,7 +21,11 @@ gcloud container clusters create $GKE_CLUSTER_NAME \
     --subnetwork=$CLUSTER_SUBNET \
     --enable-dataplane-v2 \
     --enable-dataplane-v2-flow-observability \
-    --enable-managed-prometheus
+    --enable-managed-prometheus \
+    --workload-pool=${PROJECT_ID}.svc.id.goog \
+    --workload-metadata=GKE_METADATA
+
+#    https://cloud.google.com/sdk/gcloud/reference/container/clusters/create#--workload-metadata
 
 # this command can't run in background because there is not enough quota
 gcloud container node-pools delete default-pool \
@@ -39,7 +43,7 @@ gcloud container node-pools create $NODEPOOL_NAME \
     --machine-type=e2-highcpu-4 \
     --spot 
 
-gcloud container clusters get-credentials $GKE_CLUSTER_NAME --zone $ZONE  # --project $PROJECT_ID
+gcloud container clusters get-credentials $GKE_CLUSTER_NAME --zone $ZONE --project $PROJECT_ID
 
 sleep 60
 
