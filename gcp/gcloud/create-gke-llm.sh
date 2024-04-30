@@ -28,34 +28,19 @@ gcloud container node-pools delete default-pool \
     --zone=$ZONE \
     --quiet
 
-# gcloud container node-pools create gpupool \
-#     --accelerator type=nvidia-l4,count=2,gpu-driver-version=latest \
-#     --project=${PROJECT_ID} \
-#     --location=${ZONE} \
-#     --node-locations=${ZONE} \
-#     --cluster=${GKE_CLUSTER_NAME} \
-#     --machine-type=g2-standard-24 \
-#     --num-nodes=1 \
-#     --spot
-
-# g2-standard-24	2 GPUs	48 GB GDDR6	24 vCPUs	96 GB	96 - 108 GB	750 GB
-
-# n2-standard-32 with type=nvidia-tesla-t4,count=1:
-# `creation failed: [n2-standard-32, nvidia-tesla-t4] features are not compatible for creating instance.`
-
+# https://cloud.google.com/sdk/gcloud/reference/container/node-pools/create#--accelerator
 MACHINE_TYPE="n1-standard-8"
-ACCELERATOR="type=nvidia-tesla-t4,count=1"
-gcloud container node-pools create gpupool-cheap \
-    --project=${PROJECT_ID} \
-    --zone=${ZONE} \
-    --cluster=${GKE_CLUSTER_NAME} \
+ACCELERATOR="type=nvidia-tesla-t4,count=1,gpu-driver-version=latest"
+gcloud container node-pools create gpupool-n1 \
+    --project=$PROJECT_ID \
+    --zone=$ZONE \
+    --cluster=$GKE_CLUSTER_NAME \
     --accelerator $ACCELERATOR \
     --machine-type=$MACHINE_TYPE \
     --num-nodes=1 \
     --spot
 
 # GPU availability by zone: https://cloud.google.com/compute/docs/gpus/gpu-regions-zones
-
 
 # https://cloud.google.com/compute/docs/gpus/create-vm-with-gpus#create_a_vm_that_has_attached_gpus
 # To create a VM that has attached NVIDIA H100, A100, or L4 GPUs, see Create an accelerator-optimized VM.
