@@ -3,7 +3,7 @@
 set -eoux pipefail
 
 GKE_CLUSTER_NAME="gke-dpv2"
-CLUSTER_VERSION="1.27.8-gke.1067004"
+CLUSTER_VERSION="1.29.6-gke.1038001"
 NODEPOOL_NAME="apps"
 
 # ZONE must be set in env vars
@@ -21,6 +21,7 @@ gcloud container clusters create $GKE_CLUSTER_NAME \
     --subnetwork=$CLUSTER_SUBNET \
     --enable-dataplane-v2 \
     --enable-dataplane-v2-flow-observability \
+    --enable-dataplane-v2-metrics \
     --enable-managed-prometheus \
     --workload-pool=${PROJECT_ID}.svc.id.goog \
     --workload-metadata=GKE_METADATA
@@ -50,6 +51,8 @@ sleep 60
 kubectl apply -f dpv2-hubble-ui-std.yaml
 # kubectl -n gke-managed-dpv2-observability port-forward service/hubble-ui 16100:80 --address='0.0.0.0'
 
-kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/prometheus-engine/v0.8.2/manifests/setup.yaml
-kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/prometheus-engine/v0.8.2/manifests/operator.yaml
+PROM_VERSION="v0.12.0"
+kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/prometheus-engine/$PROM_VERSION/manifests/setup.yaml
+kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/prometheus-engine/$PROM_VERSION/manifests/operator.yaml
+kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/prometheus-engine/$PROM_VERSION/manifests/rule-evaluator.yaml
 kubectl apply -f dpv2-pod-monitoring.yaml

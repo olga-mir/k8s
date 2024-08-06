@@ -4,13 +4,14 @@ set -eoux pipefail
 
 # https://www.cloudskillsboost.google/focuses/8459?parent=catalog
 
-GKE_CLUSTER_NAME="istio"
+GKE_CLUSTER_NAME="asm-demo"
 CLUSTER_VERSION="1.29.4-gke.1043002"
 NODEPOOL_NAME="apps"
 
 # ZONE must be set in env vars
 if [ -z "$ZONE" ] || \
    [ -z "$CLUSTER_VPC" ] || \
+   [ -z "$PROJECT_NUMBER" ] || \
    [ -z "$CLUSTER_SUBNET" ]; then
   echo "Error required env variables are not set" && exit 1
 fi
@@ -31,7 +32,7 @@ gcloud container clusters create $GKE_CLUSTER_NAME \
     --enable-dataplane-v2 \
     --workload-pool=${PROJECT_ID}.svc.id.goog \
     --workload-metadata=GKE_METADATA \
-    --labels mesh_id=${MESH_ID} \
+    --labels mesh_id=${PROJECT_NUMBER} \
     --logging=SYSTEM,WORKLOAD
 
 # this command can't run in background because there is not enough quota
@@ -46,38 +47,50 @@ gcloud container node-pools create $NODEPOOL_NAME \
     --node-locations=$ZONE \
     --location-policy=BALANCED \
     --enable-autoscaling \
-    --total-max-nodes=1 \
-    --machine-type=e2-highcpu-4 \
-    --spot 
+    --total-max-nodes=2 \
+    --machine-type=n2-standard-4 \
+    --spot
 
 gcloud container clusters get-credentials $GKE_CLUSTER_NAME --zone $ZONE --project $PROJECT_ID
 
-echo sleeping 60s just in case
-sleep 60
+#### --enable_all
 
-# why is this needed?
-kubectl create clusterrolebinding cluster-admin-binding   --clusterrole=cluster-admin --user=TODO
+# This CRB required even if the user already has admin via another binding:
+# asmcli: [ERROR]: Current user must have the cluster-admin role on asm-demo.
+# Please add the cluster role binding and retry, or run the script with the
+# '--enable_cluster_roles' flag to allow the script to enable it on your behalf.
+# Alternatively, use --enable_all|-e to allow this tool to handle all dependencies.
+kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value core/account 2>/dev/null)
+
+kubectl create ns istio-system
+#### END --enable_all
+
+# ASMCLI DOES NOT WORK ON MAC
+# https://github.com/GoogleCloudPlatform/anthos-service-mesh-packages/issues/1182.
+# These commands can be executed in Cloud Shell instead
 
 # Download, chmod and move to local bin:
-# curl https://storage.googleapis.com/csm-artifacts/asm/asmcli_1.20 > asmcli 
+# curl https://storage.googleapis.com/csm-artifacts/asm/asmcli_1.21 > asmcli
 
+# --output_dir must be absolute path
 asmcli validate \
   --project_id $PROJECT_ID \
   --cluster_name $GKE_CLUSTER_NAME \
   --cluster_location $ZONE \
   --fleet_id $PROJECT_ID \
-  --output_dir ./asm_output_validate
+  --output_dir $(pwd)/asm_output_validate
 
 asmcli install \
   --project_id $PROJECT_ID \
   --cluster_name $GKE_CLUSTER_NAME \
   --cluster_location $ZONE \
   --fleet_id $PROJECT_ID \
-  --output_dir ./asm_output_install \
-  --enable_all \
+  --output_dir $(pwd)/asm_output_install \
   --option legacy-default-ingressgateway \
   --ca mesh_ca \
   --enable_gcp_components
+
+  # --enable_all \
 
 # $ k get po -A | grep -E "istio|asm"
 # asm-system     canonical-service-controller-manager-74c6dc6698-nwwkb   2/2     Running   0          89s

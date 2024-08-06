@@ -41,4 +41,5 @@ gcloud container clusters delete $GKE_CLUSTER_NAME --region $CLUSTER_LOCATION
 
 gcloud container fleet mesh disable
 gcloud container fleet memberships delete ${GKE_CLUSTER_NAME}-membership --quiet
+gcloud services disable mesh.googleapis.com
 
