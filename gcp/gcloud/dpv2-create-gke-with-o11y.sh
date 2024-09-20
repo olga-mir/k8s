@@ -3,12 +3,13 @@
 set -eoux pipefail
 
 GKE_CLUSTER_NAME="gke-dpv2"
-CLUSTER_VERSION="1.29.6-gke.1038001"
+CLUSTER_VERSION="1.30.2-gke.1587003"
 NODEPOOL_NAME="apps"
 
 # ZONE must be set in env vars
 if [ -z "$ZONE" ] || \
    [ -z "$CLUSTER_VPC" ] || \
+   [ -z "$PROJECT_ID" ] || \
    [ -z "$CLUSTER_SUBNET" ]; then
   echo "Error required env variables are not set" && exit 1
 fi
@@ -40,8 +41,8 @@ gcloud container node-pools create $NODEPOOL_NAME \
     --node-locations=$ZONE \
     --location-policy=BALANCED \
     --enable-autoscaling \
-    --total-max-nodes=1 \
-    --machine-type=e2-highcpu-4 \
+    --total-max-nodes=3 \
+    --machine-type=e2-standard-8 \
     --spot 
 
 gcloud container clusters get-credentials $GKE_CLUSTER_NAME --zone $ZONE --project $PROJECT_ID
@@ -55,4 +56,4 @@ PROM_VERSION="v0.12.0"
 kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/prometheus-engine/$PROM_VERSION/manifests/setup.yaml
 kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/prometheus-engine/$PROM_VERSION/manifests/operator.yaml
 kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/prometheus-engine/$PROM_VERSION/manifests/rule-evaluator.yaml
-kubectl apply -f dpv2-pod-monitoring.yaml
+# kubectl apply -f dpv2-pod-monitoring.yaml
