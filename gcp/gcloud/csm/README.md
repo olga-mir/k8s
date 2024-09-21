@@ -34,6 +34,9 @@ As you can guess from the folder's name this didn't go all too well.
 
 I've tried to unwind this failure with [./move-gke-from-asm-to-csm.sh](./move-gke-from-asm-to-csm.sh) but ran out of time. 
 
+This is where I've got so far:
+![First attempt CSM with GKE and CR](./docs/images/attempt1-csm-gke-cr.png "First Attempt")
+
 ### Plan for next attempt
 
 1. Create CSM (Traffic Director) first: [./deploy-mesh.sh](./deploy-mesh.sh)

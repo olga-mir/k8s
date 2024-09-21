@@ -23,4 +23,6 @@ aws/.setup-env
 gcp/.setup-env
 gcp/gcloud/.setup-env
 
-./gcp/gcloud/csm/manifests/rendered
+gcp/gcloud/csm/manifests/rendered
+gcp/gcloud/csm/.csm-env
+gcp/gcloud/csm/manifests/rendered/
