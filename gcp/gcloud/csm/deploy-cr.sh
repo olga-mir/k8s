@@ -8,34 +8,31 @@ set -eoux pipefail
 : "${MESH_NAME:?Variable MESH_NAME is not set}"
 : "${CLUSTER_NAME:?Variable CLUSTER_NAME is not set}"
 : "${REGION:?Variable REGION is not set}"
-: "${DESTINATION_SERVICE_NAME:?Variable DESTINATION_SERVICE_NAME is not set}"
 : "${PROJECT_ID:?Variable PROJECT_ID is not set}"
 : "${PROJECT_NUMBER:?Variable PROJECT_NUMBER is not set}"
-: "${VPC_NETWORK_NAME:?Variable VPC_NETWORK_NAME is not set}"
+: "${CR_VPC_NAME:?Variable CR_VPC_NAME is not set}"
 : "${CR_SUBNET_NAME:?Variable CR_SUBNET_NAME is not set}"
-: "${DOMAIN_NAME:?Variable DOMAIN_NAME is not set}"
 
-"${IMAGE_URL:-us-docker.pkg.dev/cloudrun/container/hello:latest}"
-"${CLIENT_SERVICE_NAME:-csm-cr-client}"
-"${DOMAIN_NAME:-csm-dns.com}"
-exit 0
+IMAGE_URL=${IMAGE_URL:-"us-docker.pkg.dev/cloudrun/container/hello:latest"}
+CLIENT_SERVICE_NAME=${CLIENT_SERVICE_NAME:-"csm-cr-client"}
+DESTINATION_SERVICE_NAME=${DESTINATION_SERVICE_NAME:-"dest-serverless"}
+DOMAIN_NAME="${DOMAIN_NAME:-csm-dns.com}"
 
 # Make sure you run mesh create before this script
 # MESH_NAME=$(gcloud network-services meshes list --location=global --format=json | yq '.[0].name')
 
 # Setup Cloud DNS
-gcloud dns managed-zones create ${MESH_NAME} \
-  --description="Domain for ${DOMAIN_NAME} service mesh routes" \
-  --dns-name=${DOMAIN_NAME}. \
-  --network=${VPC_NETWORK_NAME} \
-  --visibility=private
-
-gcloud dns record-sets create "*.$DOMAIN_NAME." \
-  --type=A \
-  --zone=$MESH_NAME \
-  --rrdatas=10.0.0.1 \
-  --ttl=3600
-
+# gcloud dns managed-zones create ${MESH_NAME} \
+#   --description="Domain for ${DOMAIN_NAME} service mesh routes" \
+#   --dns-name=${DOMAIN_NAME}. \
+#   --network=${CR_VPC_NAME} \
+#   --visibility=private
+# 
+# gcloud dns record-sets create "*.$DOMAIN_NAME." \
+#   --type=A \
+#   --zone=$MESH_NAME \
+#   --rrdatas=10.0.0.1 \
+#   --ttl=3600
 
 gcloud run deploy $DESTINATION_SERVICE_NAME \
   --no-allow-unauthenticated \
@@ -80,7 +77,7 @@ gcloud run services add-iam-policy-binding $DESTINATION_SERVICE_NAME \
 gcloud beta run deploy $CLIENT_SERVICE_NAME \
   --region=$REGION \
   --image=fortio/fortio \
-  --network=$VPC_NETWORK_NAME \
+  --network=$CR_VPC_NAME \
   --subnet=$CR_SUBNET_NAME \
   --mesh="projects/$PROJECT_ID/locations/global/meshes/$MESH_NAME"
 

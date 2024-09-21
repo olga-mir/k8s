@@ -1,0 +1,10 @@
+name: "projects/$PROJECT_ID/locations/global/meshes/$MESH_NAME"
+# hostnames:
+#   - "gke-service.example.com"
+# meshes:
+#   - "projects/$PROJECT_ID/locations/global/meshes/$MESH_NAME"
+# rules:
+#   - action:
+#       destinations:
+#         - serviceName: "projects/$PROJECT_ID/locations/global/backendServices/gke-backend"
+# 

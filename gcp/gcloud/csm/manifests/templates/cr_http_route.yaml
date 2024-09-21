@@ -1,0 +1,9 @@
+name: "${DESTINATION_SERVICE_NAME}-route"
+hostnames:
+  - "${DESTINATION_SERVICE_NAME}.${DOMAIN_NAME}"
+meshes:
+  - "projects/${PROJECT_ID}/locations/global/meshes/${MESH_NAME}"
+rules:
+  - action:
+      destinations:
+        - serviceName: "projects/${PROJECT_ID}/locations/global/backendServices/${DESTINATION_SERVICE_NAME}-${REGION}"
